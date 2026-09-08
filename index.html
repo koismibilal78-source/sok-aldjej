@@ -2352,10 +2352,6 @@ button.submit{padding:14px;}
         <div class="field"><label>نوع الحساب</label><div id="settingsAccType" style="padding:10px 0;font-weight:700;"></div></div>
         <div class="field"><label>الولاية / البلدية</label><div id="settingsAccLoc" style="padding:10px 0;font-weight:700;"></div></div>
         <div class="field"><label>الدولة</label><div id="settingsAccCountry" style="padding:10px 0;font-weight:700;"></div></div>
-        <div class="field">
-          <label data-i18n="app_language_label">لغة التطبيق</label>
-          <select id="settingsLangSelect" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:'Cairo',sans-serif;font-weight:700;"></select>
-        </div>
         <button type="button" class="submit" id="settingsGoProfileBtn">تعديل الملف الشخصي</button>
       </div>
 
@@ -2406,9 +2402,10 @@ button.submit{padding:14px;}
       <!-- اللغة -->
       <div class="settings-sub" data-settings-panel="language" style="display:none;">
         <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
-        <div class="lang-option" data-lang="ar">العربية</div>
-        <div class="lang-option" data-lang="fr">الفرنسية / Français</div>
-        <div class="lang-option" data-lang="en">الإنجليزية / English</div>
+        <div class="field">
+          <label data-i18n="app_language_label">لغة التطبيق</label>
+          <select id="settingsLangSelect" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:'Cairo',sans-serif;font-weight:700;"></select>
+        </div>
       </div>
 
       <!-- الوضع الليلي -->
@@ -2588,6 +2585,8 @@ button.submit{padding:14px;}
       const key = el.dataset.i18n;
       if (dict[key]) el.textContent = dict[key];
     });
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
   }
 
   // ----- تطبيق تفضيلات الإعدادات المحفوظة محليًا (السمة وحجم الخط واللغة) عند فتح التطبيق -----
@@ -3014,6 +3013,7 @@ button.submit{padding:14px;}
     const dict = TRANSLATIONS[lang];
     const base = TRANSLATIONS.ar;
     document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     try { localStorage.setItem('sokAppLang', lang); } catch (e) {}
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
