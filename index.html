@@ -1862,18 +1862,18 @@ button.submit{padding:14px;}
     <!-- قائمة الإشعارات -->
     <div class="card notif-floating" id="notifPanel" style="display:none;padding:14px 16px;">
       <div class="topbar" style="margin-bottom:10px;">
-        <h1 style="font-size:calc(16px * var(--fs-scale));margin:0;">الإشعارات</h1>
-        <button type="button" id="closeNotif" style="background:none;border:none;color:#8a8070;font-size:calc(13px * var(--fs-scale));font-family:'Cairo',sans-serif;cursor:pointer;padding:0;">إغلاق</button>
+        <h1 style="font-size:calc(16px * var(--fs-scale));margin:0;" data-i18n="notif_title">الإشعارات</h1>
+        <button type="button" id="closeNotif" style="background:none;border:none;color:#8a8070;font-size:calc(13px * var(--fs-scale));font-family:'Cairo',sans-serif;cursor:pointer;padding:0;" data-i18n="notif_close">إغلاق</button>
       </div>
       <div id="notifList"></div>
     </div>
 
     <div id="appSubTabs">
       <div class="sidebar-head">
-        <div class="sidebar-title">القائمة</div>
+        <div class="sidebar-title" data-i18n="menu_title">القائمة</div>
         <button type="button" class="sidebar-close" id="sidebarCloseBtn">✕</button>
       </div>
-      <div class="apptab active" data-apptab="home"><span class="apptab-ic">🏠</span> الرئيسية</div>
+      <div class="apptab active" data-apptab="home"><span class="apptab-ic">🏠</span> <span data-i18n="nav_home">الرئيسية</span></div>
       <div class="apptab" data-apptab="publish"><span class="apptab-ic">📢</span> <span data-i18n="nav_publish">نشر إعلان</span></div>
       <div class="apptab" data-apptab="market"><span class="apptab-ic">🛒</span> <span data-i18n="nav_market">السوق</span></div>
       <div class="apptab" data-apptab="live"><span class="apptab-ic">🔴</span> <span data-i18n="nav_live">لايف</span></div>
@@ -1882,10 +1882,10 @@ button.submit{padding:14px;}
       <div class="apptab" data-apptab="complaints"><span class="apptab-ic">📮</span> <span data-i18n="nav_complaints">شكاوى واقتراحات</span></div>
       <div class="apptab" data-apptab="profile"><span class="apptab-ic">👤</span> <span data-i18n="nav_profile">الملف الشخصي</span></div>
       <div class="apptab" data-apptab="settings"><span class="apptab-ic">⚙️</span> <span data-i18n="nav_settings">الإعدادات</span></div>
-      <div class="apptab" data-apptab="subscription" id="subscriptionTabBtn" style="display:none;"><span class="apptab-ic">⭐</span> الاشتراك</div>
+      <div class="apptab" data-apptab="subscription" id="subscriptionTabBtn" style="display:none;"><span class="apptab-ic">⭐</span> <span data-i18n="nav_subscription">الاشتراك</span></div>
       <div class="apptab" data-apptab="admin" id="adminTabBtn" style="display:none;"><span class="apptab-ic">🛠️</span> <span data-i18n="nav_admin">الإدارة</span></div>
       <div class="sidebar-logout">
-        <button class="logout" id="logoutBtn" type="button">تسجيل الخروج</button>
+        <button class="logout" id="logoutBtn" type="button" data-i18n="logout_btn">تسجيل الخروج</button>
       </div>
     </div>
 
@@ -2347,61 +2347,61 @@ button.submit{padding:14px;}
 
       <!-- الحساب والملف الشخصي -->
       <div class="settings-sub" data-settings-panel="account" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
         <div class="field"><label data-i18n="full_name_label">الاسم الكامل</label><div id="settingsAccName" class="no-translate" style="padding:10px 0;font-weight:700;"></div></div>
-        <div class="field"><label>نوع الحساب</label><div id="settingsAccType" style="padding:10px 0;font-weight:700;"></div></div>
-        <div class="field"><label>الولاية / البلدية</label><div id="settingsAccLoc" style="padding:10px 0;font-weight:700;"></div></div>
-        <div class="field"><label>الدولة</label><div id="settingsAccCountry" style="padding:10px 0;font-weight:700;"></div></div>
-        <button type="button" class="submit" id="settingsGoProfileBtn">تعديل الملف الشخصي</button>
+        <div class="field"><label data-i18n="acc_type_label">نوع الحساب</label><div id="settingsAccType" style="padding:10px 0;font-weight:700;"></div></div>
+        <div class="field"><label data-i18n="acc_location_label">الولاية / البلدية</label><div id="settingsAccLoc" style="padding:10px 0;font-weight:700;"></div></div>
+        <div class="field"><label data-i18n="acc_country_label">الدولة</label><div id="settingsAccCountry" style="padding:10px 0;font-weight:700;"></div></div>
+        <button type="button" class="submit" id="settingsGoProfileBtn" data-i18n="edit_profile_btn">تعديل الملف الشخصي</button>
       </div>
 
       <!-- تغيير كلمة المرور -->
       <div class="settings-sub" data-settings-panel="password" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
         <div class="field">
-          <label for="settingsNewPassword">كلمة المرور الجديدة</label>
-          <input type="password" id="settingsNewPassword" placeholder="6 أحرف على الأقل">
+          <label for="settingsNewPassword" data-i18n="new_password_label">كلمة المرور الجديدة</label>
+          <input type="password" id="settingsNewPassword" placeholder="6 أحرف على الأقل" data-i18n-ph="new_password_placeholder">
         </div>
         <div class="field">
-          <label for="settingsConfirmPassword">تأكيد كلمة المرور</label>
-          <input type="password" id="settingsConfirmPassword" placeholder="أعد كتابة كلمة المرور">
+          <label for="settingsConfirmPassword" data-i18n="confirm_password_label">تأكيد كلمة المرور</label>
+          <input type="password" id="settingsConfirmPassword" placeholder="أعد كتابة كلمة المرور" data-i18n-ph="confirm_password_placeholder">
         </div>
-        <button type="button" class="submit" id="settingsSavePasswordBtn">حفظ كلمة المرور</button>
+        <button type="button" class="submit" id="settingsSavePasswordBtn" data-i18n="save_password_btn">حفظ كلمة المرور</button>
         <div id="settingsPasswordMsg" class="msg"></div>
       </div>
 
       <!-- رقم الهاتف والبريد -->
       <div class="settings-sub" data-settings-panel="contact" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
         <div class="field">
-          <label for="settingsPhone">رقم الهاتف</label>
+          <label for="settingsPhone" data-i18n="phone_label">رقم الهاتف</label>
           <input type="tel" id="settingsPhone">
         </div>
         <div class="field">
-          <label for="settingsEmail">البريد الإلكتروني</label>
+          <label for="settingsEmail" data-i18n="email_label">البريد الإلكتروني</label>
           <input type="email" id="settingsEmail">
-          <div class="price-suffix">عند تغيير البريد، ستصلك رسالة تأكيد على البريد الجديد.</div>
+          <div class="price-suffix" data-i18n="email_change_hint">عند تغيير البريد، ستصلك رسالة تأكيد على البريد الجديد.</div>
         </div>
-        <button type="button" class="submit" id="settingsSaveContactBtn">حفظ التعديلات</button>
+        <button type="button" class="submit" id="settingsSaveContactBtn" data-i18n="save_contact_btn">حفظ التعديلات</button>
         <div id="settingsContactMsg" class="msg"></div>
       </div>
 
       <!-- إعدادات الإشعارات -->
       <div class="settings-sub" data-settings-panel="notifications" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
         <div class="settings-row">
-          <div class="settings-row-label"><span>🔔</span> السماح بالإشعارات</div>
+          <div class="settings-row-label"><span>🔔</span> <span data-i18n="allow_notifications_label">السماح بالإشعارات</span></div>
           <label class="switch">
             <input type="checkbox" id="settingsNotifToggle">
             <span class="switch-slider"></span>
           </label>
         </div>
-        <div class="price-suffix" style="margin-top:8px;">عند الإيقاف، لن تظهر إشعارات التطبيق لك. يمكن حفظ الاختيار حتى بعد تسجيل الخروج والدخول.</div>
+        <div class="price-suffix" style="margin-top:8px;" data-i18n="notif_off_hint">عند الإيقاف، لن تظهر إشعارات التطبيق لك. يمكن حفظ الاختيار حتى بعد تسجيل الخروج والدخول.</div>
       </div>
 
       <!-- اللغة -->
       <div class="settings-sub" data-settings-panel="language" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
         <div class="field">
           <label data-i18n="app_language_label">لغة التطبيق</label>
           <select id="settingsLangSelect" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:'Cairo',sans-serif;font-weight:700;"></select>
@@ -2410,24 +2410,24 @@ button.submit{padding:14px;}
 
       <!-- الوضع الليلي -->
       <div class="settings-sub" data-settings-panel="theme" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
-        <div class="theme-option" data-theme-choice="light">☀️ فاتح</div>
-        <div class="theme-option" data-theme-choice="dark">🌙 داكن</div>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
+        <div class="theme-option" data-theme-choice="light" data-i18n="theme_light">☀️ فاتح</div>
+        <div class="theme-option" data-theme-choice="dark" data-i18n="theme_dark">🌙 داكن</div>
       </div>
 
       <!-- حجم الخط -->
       <div class="settings-sub" data-settings-panel="fontsize" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
-        <div class="fs-option" data-fs-choice="small">صغير</div>
-        <div class="fs-option" data-fs-choice="medium">متوسط (افتراضي)</div>
-        <div class="fs-option" data-fs-choice="large">كبير</div>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
+        <div class="fs-option" data-fs-choice="small" data-i18n="fs_small">صغير</div>
+        <div class="fs-option" data-fs-choice="medium" data-i18n="fs_medium">متوسط (افتراضي)</div>
+        <div class="fs-option" data-fs-choice="large" data-i18n="fs_large">كبير</div>
       </div>
 
       <!-- حالة النشاط -->
       <div class="settings-sub" data-settings-panel="activity" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
         <div class="settings-row">
-          <div class="settings-row-label"><span>🟢</span> إظهار حالة نشاطي للآخرين</div>
+          <div class="settings-row-label"><span>🟢</span> <span data-i18n="show_activity_label">إظهار حالة نشاطي للآخرين</span></div>
           <label class="switch">
             <input type="checkbox" id="settingsActivityToggle">
             <span class="switch-slider"></span>
@@ -2437,10 +2437,10 @@ button.submit{padding:14px;}
 
       <!-- عن التطبيق -->
       <div class="settings-sub" data-settings-panel="about" style="display:none;">
-        <button type="button" class="settings-back" data-settings-back>→ رجوع</button>
-        <div class="field"><label>اسم التطبيق</label><div style="padding:10px 0;font-weight:700;">سوق الدجاج الوطني</div></div>
-        <div class="field"><label>الوصف</label><div style="padding:10px 0;">منصة وطنية تربط مربي الدجاج بالتجار، للتصفح والبيع والمراسلة والبث المباشر.</div></div>
-        <div class="field"><label>الإصدار</label><div style="padding:10px 0;font-weight:700;">1.0</div></div>
+        <button type="button" class="settings-back" data-settings-back data-i18n="settings_back">→ رجوع</button>
+        <div class="field"><label data-i18n="about_app_name_label">اسم التطبيق</label><div style="padding:10px 0;font-weight:700;" data-i18n="app_title">سوق الدجاج الوطني</div></div>
+        <div class="field"><label data-i18n="about_desc_label">الوصف</label><div style="padding:10px 0;" data-i18n="about_desc_value">منصة وطنية تربط مربي الدجاج بالتجار، للتصفح والبيع والمراسلة والبث المباشر.</div></div>
+        <div class="field"><label data-i18n="about_version_label">الإصدار</label><div style="padding:10px 0;font-weight:700;">1.0</div></div>
       </div>
     </div>
 
@@ -2580,13 +2580,9 @@ button.submit{padding:14px;}
   };
 
   function applyTranslations(lang) {
-    const dict = i18nTable[lang] || i18nTable.ar;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      if (dict[key]) el.textContent = dict[key];
-    });
-    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-    document.documentElement.setAttribute('lang', lang);
+    // موحّد الآن: النظام القديم يُفوّض بالكامل لنظام TRANSLATIONS/applyLanguage
+    // لمنع أي تضارب أو خلط بين اللغات (كل صفحة تُترجم بمصدر واحد فقط)
+    applyLanguage(lang);
   }
 
   // ----- تطبيق تفضيلات الإعدادات المحفوظة محليًا (السمة وحجم الخط واللغة) عند فتح التطبيق -----
@@ -2596,8 +2592,7 @@ button.submit{padding:14px;}
     const savedFs = localStorage.getItem('appFontSize') || 'medium';
     const fsMap = { small: 0.9, medium: 1, large: 1.15 };
     document.documentElement.style.setProperty('--fs-scale', fsMap[savedFs] || 1);
-    const savedLang = localStorage.getItem('appLang') || 'ar';
-    applyTranslations(savedLang);
+    // ملاحظة: تطبيق اللغة المحفوظة يتم لاحقًا بعد تعريف TRANSLATIONS (انظر أسفل)
   })();
   const debugPanel = document.getElementById('debugPanel');
   function log(text, isErr) {
@@ -2877,6 +2872,17 @@ button.submit{padding:14px;}
       commune_label:'البلدية', commune_label_intl:'المدينة',
       account_type_label:'نوع الحساب', trader_label:'تاجر', breeder_label:'مربي دجاج', register_btn:'إنشاء الحساب',
       nav_home:'الرئيسية', nav_live:'لايف', nav_messages:'المحادثات', nav_profile:'حسابي', app_language_label:'لغة التطبيق',
+      app_title2:'سوق الدجاج', nav_publish:'نشر إعلان', nav_market:'السوق', nav_posts:'المنشورات', nav_complaints:'شكاوى واقتراحات', nav_settings:'الإعدادات', nav_admin:'الإدارة', nav_subscription:'الاشتراك',
+      h_publish:'نشر إعلان بيع', h_market:'السوق', h_live:'البث المباشر 🔴', h_messages:'الرسائل', h_posts:'المنشورات', h_complaints:'شكاوى واقتراحات', h_settings:'الإعدادات', h_admin:'لوحة الإدارة', h_subscription:'الاشتراك',
+      s_account:'الحساب والملف الشخصي', s_password:'تغيير كلمة المرور', s_contact:'رقم الهاتف والبريد الإلكتروني', s_notifications:'إعدادات الإشعارات', s_language:'اللغة', s_theme:'الوضع الليلي', s_fontsize:'حجم الخط', s_activity:'حالة النشاط', s_about:'عن التطبيق',
+      menu_title:'القائمة', logout_btn:'تسجيل الخروج', notif_title:'الإشعارات', notif_close:'إغلاق',
+      settings_back:'رجوع', theme_light:'فاتح', theme_dark:'داكن',
+      acc_type_label:'نوع الحساب', acc_location_label:'الولاية / البلدية', acc_country_label:'الدولة', edit_profile_btn:'تعديل الملف الشخصي',
+      new_password_label:'كلمة المرور الجديدة', new_password_placeholder:'6 أحرف على الأقل', confirm_password_label:'تأكيد كلمة المرور', confirm_password_placeholder:'أعد كتابة كلمة المرور', save_password_btn:'حفظ كلمة المرور',
+      phone_label:'رقم الهاتف', email_label:'البريد الإلكتروني', email_change_hint:'عند تغيير البريد، ستصلك رسالة تأكيد على البريد الجديد.', save_contact_btn:'حفظ التعديلات',
+      allow_notifications_label:'السماح بالإشعارات', notif_off_hint:'عند الإيقاف، لن تظهر إشعارات التطبيق لك. يمكن حفظ الاختيار حتى بعد تسجيل الخروج والدخول.',
+      fs_small:'صغير', fs_medium:'متوسط (افتراضي)', fs_large:'كبير', show_activity_label:'إظهار حالة نشاطي للآخرين',
+      about_app_name_label:'اسم التطبيق', about_desc_label:'الوصف', about_desc_value:'منصة وطنية تربط مربي الدجاج بالتجار، للتصفح والبيع والمراسلة والبث المباشر.', about_version_label:'الإصدار',
     },
     fr: {
       app_title:'Marché National de Volaille', welcome_title:'Bienvenue', welcome_sub:"Créez un compte ou connectez-vous avec votre email et mot de passe.",
@@ -2889,6 +2895,17 @@ button.submit{padding:14px;}
       commune_label:'Commune', commune_label_intl:'Ville',
       account_type_label:'Type de compte', trader_label:'Commerçant', breeder_label:'Éleveur', register_btn:'Créer le compte',
       nav_home:'Accueil', nav_live:'Live', nav_messages:'Messages', nav_profile:'Profil', app_language_label:'Langue de l’application',
+      app_title2:'Marché des Poulets', nav_publish:'Publier une annonce', nav_market:'Marché', nav_posts:'Publications', nav_complaints:'Réclamations', nav_settings:'Paramètres', nav_admin:'Administration', nav_subscription:'Abonnement',
+      h_publish:'Publier une annonce de vente', h_market:'Marché', h_live:'Diffusion en direct 🔴', h_messages:'Messages', h_posts:'Publications', h_complaints:'Réclamations et suggestions', h_settings:'Paramètres', h_admin:"Panneau d'administration", h_subscription:'Abonnement',
+      s_account:'Compte et profil', s_password:'Changer le mot de passe', s_contact:'Téléphone et e-mail', s_notifications:'Notifications', s_language:'Langue', s_theme:'Mode sombre', s_fontsize:'Taille du texte', s_activity:"Statut d'activité", s_about:"À propos de l'application",
+      menu_title:'Menu', logout_btn:'Déconnexion', notif_title:'Notifications', notif_close:'Fermer',
+      settings_back:'Retour', theme_light:'Clair', theme_dark:'Sombre',
+      acc_type_label:'Type de compte', acc_location_label:'Wilaya / Commune', acc_country_label:'Pays', edit_profile_btn:'Modifier le profil',
+      new_password_label:'Nouveau mot de passe', new_password_placeholder:'6 caractères minimum', confirm_password_label:'Confirmer le mot de passe', confirm_password_placeholder:'Retapez le mot de passe', save_password_btn:'Enregistrer le mot de passe',
+      phone_label:'Numéro de téléphone', email_label:'E-mail', email_change_hint:"En changeant votre e-mail, un message de confirmation sera envoyé à la nouvelle adresse.", save_contact_btn:'Enregistrer les modifications',
+      allow_notifications_label:'Autoriser les notifications', notif_off_hint:"Si désactivé, vous ne recevrez plus les notifications de l'application. Ce choix peut être conservé même après déconnexion.",
+      fs_small:'Petit', fs_medium:'Moyen (par défaut)', fs_large:'Grand', show_activity_label:'Afficher mon statut d\'activité aux autres',
+      about_app_name_label:"Nom de l'application", about_desc_label:'Description', about_desc_value:"Plateforme nationale reliant les éleveurs de volailles aux commerçants, pour la navigation, la vente, la messagerie et la diffusion en direct.", about_version_label:'Version',
     },
     en: {
       app_title:'National Poultry Market', welcome_title:'Welcome', welcome_sub:'Create a new account or sign in with your email and password.',
@@ -2901,6 +2918,17 @@ button.submit{padding:14px;}
       commune_label:'Municipality', commune_label_intl:'City',
       account_type_label:'Account type', trader_label:'Trader', breeder_label:'Breeder', register_btn:'Create account',
       nav_home:'Home', nav_live:'Live', nav_messages:'Messages', nav_profile:'Profile', app_language_label:'App language',
+      app_title2:'Poultry Market', nav_publish:'Post a listing', nav_market:'Market', nav_posts:'Posts', nav_complaints:'Complaints & suggestions', nav_settings:'Settings', nav_admin:'Admin', nav_subscription:'Subscription',
+      h_publish:'Post a sale listing', h_market:'Market', h_live:'Live broadcast 🔴', h_messages:'Messages', h_posts:'Posts', h_complaints:'Complaints & suggestions', h_settings:'Settings', h_admin:'Admin panel', h_subscription:'Subscription',
+      s_account:'Account & profile', s_password:'Change password', s_contact:'Phone & email', s_notifications:'Notifications', s_language:'Language', s_theme:'Dark mode', s_fontsize:'Font size', s_activity:'Activity status', s_about:'About the app',
+      menu_title:'Menu', logout_btn:'Log out', notif_title:'Notifications', notif_close:'Close',
+      settings_back:'Back', theme_light:'Light', theme_dark:'Dark',
+      acc_type_label:'Account type', acc_location_label:'Province / Municipality', acc_country_label:'Country', edit_profile_btn:'Edit profile',
+      new_password_label:'New password', new_password_placeholder:'At least 6 characters', confirm_password_label:'Confirm password', confirm_password_placeholder:'Re-enter the password', save_password_btn:'Save password',
+      phone_label:'Phone number', email_label:'Email', email_change_hint:'When you change your email, a confirmation message will be sent to the new address.', save_contact_btn:'Save changes',
+      allow_notifications_label:'Allow notifications', notif_off_hint:'When turned off, you will not receive app notifications. This choice can be kept even after logging out and back in.',
+      fs_small:'Small', fs_medium:'Medium (default)', fs_large:'Large', show_activity_label:'Show my activity status to others',
+      about_app_name_label:'App name', about_desc_label:'Description', about_desc_value:'A national platform connecting poultry farmers with traders, for browsing, selling, messaging, and live broadcasting.', about_version_label:'Version',
     },
     es: {
       app_title:'Mercado Nacional Avícola', welcome_title:'Bienvenido', welcome_sub:'Crea una cuenta o inicia sesión con tu correo y contraseña.',
@@ -2913,6 +2941,17 @@ button.submit{padding:14px;}
       commune_label:'Municipio', commune_label_intl:'Ciudad',
       account_type_label:'Tipo de cuenta', trader_label:'Comerciante', breeder_label:'Criador', register_btn:'Crear cuenta',
       nav_home:'Inicio', nav_live:'En vivo', nav_messages:'Mensajes', nav_profile:'Perfil', app_language_label:'Idioma de la aplicación',
+      app_title2:'Mercado Avícola', nav_publish:'Publicar anuncio', nav_market:'Mercado', nav_posts:'Publicaciones', nav_complaints:'Quejas y sugerencias', nav_settings:'Ajustes', nav_admin:'Administración', nav_subscription:'Suscripción',
+      h_publish:'Publicar un anuncio de venta', h_market:'Mercado', h_live:'Transmisión en vivo 🔴', h_messages:'Mensajes', h_posts:'Publicaciones', h_complaints:'Quejas y sugerencias', h_settings:'Ajustes', h_admin:'Panel de administración', h_subscription:'Suscripción',
+      s_account:'Cuenta y perfil', s_password:'Cambiar contraseña', s_contact:'Teléfono y correo', s_notifications:'Notificaciones', s_language:'Idioma', s_theme:'Modo oscuro', s_fontsize:'Tamaño de letra', s_activity:'Estado de actividad', s_about:'Acerca de la app',
+      menu_title:'Menú', logout_btn:'Cerrar sesión', notif_title:'Notificaciones', notif_close:'Cerrar',
+      settings_back:'Atrás', theme_light:'Claro', theme_dark:'Oscuro',
+      acc_type_label:'Tipo de cuenta', acc_location_label:'Provincia / Municipio', acc_country_label:'País', edit_profile_btn:'Editar perfil',
+      new_password_label:'Nueva contraseña', new_password_placeholder:'Mínimo 6 caracteres', confirm_password_label:'Confirmar contraseña', confirm_password_placeholder:'Vuelve a escribir la contraseña', save_password_btn:'Guardar contraseña',
+      phone_label:'Número de teléfono', email_label:'Correo electrónico', email_change_hint:'Al cambiar tu correo, se enviará un mensaje de confirmación a la nueva dirección.', save_contact_btn:'Guardar cambios',
+      allow_notifications_label:'Permitir notificaciones', notif_off_hint:'Si está desactivado, no recibirás notificaciones de la app. Esta opción puede mantenerse incluso tras cerrar sesión.',
+      fs_small:'Pequeño', fs_medium:'Mediano (predeterminado)', fs_large:'Grande', show_activity_label:'Mostrar mi estado de actividad a otros',
+      about_app_name_label:'Nombre de la app', about_desc_label:'Descripción', about_desc_value:'Una plataforma nacional que conecta a los criadores de aves de corral con los comerciantes, para navegar, vender, enviar mensajes y transmitir en vivo.', about_version_label:'Versión',
     },
     de: {
       app_title:'Nationaler Geflügelmarkt', welcome_title:'Willkommen', welcome_sub:'Erstellen Sie ein Konto oder melden Sie sich mit E-Mail und Passwort an.',
@@ -2925,6 +2964,17 @@ button.submit{padding:14px;}
       commune_label:'Gemeinde', commune_label_intl:'Stadt',
       account_type_label:'Kontotyp', trader_label:'Händler', breeder_label:'Züchter', register_btn:'Konto erstellen',
       nav_home:'Start', nav_live:'Live', nav_messages:'Nachrichten', nav_profile:'Profil', app_language_label:'App-Sprache',
+      app_title2:'Geflügelmarkt', nav_publish:'Anzeige veröffentlichen', nav_market:'Markt', nav_posts:'Beiträge', nav_complaints:'Beschwerden & Vorschläge', nav_settings:'Einstellungen', nav_admin:'Verwaltung', nav_subscription:'Abonnement',
+      h_publish:'Verkaufsanzeige veröffentlichen', h_market:'Markt', h_live:'Live-Übertragung 🔴', h_messages:'Nachrichten', h_posts:'Beiträge', h_complaints:'Beschwerden & Vorschläge', h_settings:'Einstellungen', h_admin:'Admin-Bereich', h_subscription:'Abonnement',
+      s_account:'Konto & Profil', s_password:'Passwort ändern', s_contact:'Telefon & E-Mail', s_notifications:'Benachrichtigungen', s_language:'Sprache', s_theme:'Dunkelmodus', s_fontsize:'Schriftgröße', s_activity:'Aktivitätsstatus', s_about:'Über die App',
+      menu_title:'Menü', logout_btn:'Abmelden', notif_title:'Benachrichtigungen', notif_close:'Schließen',
+      settings_back:'Zurück', theme_light:'Hell', theme_dark:'Dunkel',
+      acc_type_label:'Kontotyp', acc_location_label:'Provinz / Gemeinde', acc_country_label:'Land', edit_profile_btn:'Profil bearbeiten',
+      new_password_label:'Neues Passwort', new_password_placeholder:'Mindestens 6 Zeichen', confirm_password_label:'Passwort bestätigen', confirm_password_placeholder:'Passwort erneut eingeben', save_password_btn:'Passwort speichern',
+      phone_label:'Telefonnummer', email_label:'E-Mail', email_change_hint:'Bei Änderung Ihrer E-Mail wird eine Bestätigungsnachricht an die neue Adresse gesendet.', save_contact_btn:'Änderungen speichern',
+      allow_notifications_label:'Benachrichtigungen zulassen', notif_off_hint:'Bei Deaktivierung erhalten Sie keine App-Benachrichtigungen mehr. Diese Wahl kann auch nach Ab- und Anmeldung beibehalten werden.',
+      fs_small:'Klein', fs_medium:'Mittel (Standard)', fs_large:'Groß', show_activity_label:'Meinen Aktivitätsstatus anderen anzeigen',
+      about_app_name_label:'App-Name', about_desc_label:'Beschreibung', about_desc_value:'Eine landesweite Plattform, die Geflügelzüchter mit Händlern verbindet, zum Durchsuchen, Verkaufen, Nachrichtenversand und Live-Übertragung.', about_version_label:'Version',
     },
     tr: {
       app_title:'Ulusal Kümes Hayvanları Pazarı', welcome_title:'Hoş geldiniz', welcome_sub:'Yeni bir hesap oluşturun veya e-posta ve şifrenizle giriş yapın.',
@@ -2937,6 +2987,17 @@ button.submit{padding:14px;}
       commune_label:'İlçe', commune_label_intl:'Şehir',
       account_type_label:'Hesap türü', trader_label:'Tüccar', breeder_label:'Yetiştirici', register_btn:'Hesap oluştur',
       nav_home:'Ana sayfa', nav_live:'Canlı', nav_messages:'Mesajlar', nav_profile:'Profil', app_language_label:'Uygulama dili',
+      app_title2:'Kümes Hayvanları Pazarı', nav_publish:'İlan ver', nav_market:'Pazar', nav_posts:'Gönderiler', nav_complaints:'Şikayet ve öneriler', nav_settings:'Ayarlar', nav_admin:'Yönetim', nav_subscription:'Abonelik',
+      h_publish:'Satış ilanı ver', h_market:'Pazar', h_live:'Canlı yayın 🔴', h_messages:'Mesajlar', h_posts:'Gönderiler', h_complaints:'Şikayet ve öneriler', h_settings:'Ayarlar', h_admin:'Yönetim paneli', h_subscription:'Abonelik',
+      s_account:'Hesap ve profil', s_password:'Şifreyi değiştir', s_contact:'Telefon ve e-posta', s_notifications:'Bildirimler', s_language:'Dil', s_theme:'Karanlık mod', s_fontsize:'Yazı boyutu', s_activity:'Etkinlik durumu', s_about:'Uygulama hakkında',
+      menu_title:'Menü', logout_btn:'Çıkış yap', notif_title:'Bildirimler', notif_close:'Kapat',
+      settings_back:'Geri', theme_light:'Açık', theme_dark:'Koyu',
+      acc_type_label:'Hesap türü', acc_location_label:'İl / Belediye', acc_country_label:'Ülke', edit_profile_btn:'Profili düzenle',
+      new_password_label:'Yeni şifre', new_password_placeholder:'En az 6 karakter', confirm_password_label:'Şifreyi onayla', confirm_password_placeholder:'Şifreyi tekrar girin', save_password_btn:'Şifreyi kaydet',
+      phone_label:'Telefon numarası', email_label:'E-posta', email_change_hint:'E-postanızı değiştirdiğinizde yeni adrese bir onay mesajı gönderilecektir.', save_contact_btn:'Değişiklikleri kaydet',
+      allow_notifications_label:'Bildirimlere izin ver', notif_off_hint:'Kapatıldığında uygulama bildirimlerini almazsınız. Bu seçim çıkış yaptıktan sonra bile korunabilir.',
+      fs_small:'Küçük', fs_medium:'Orta (varsayılan)', fs_large:'Büyük', show_activity_label:'Etkinlik durumumu başkalarına göster',
+      about_app_name_label:'Uygulama adı', about_desc_label:'Açıklama', about_desc_value:'Kümes hayvanı yetiştiricilerini tüccarlarla buluşturan; göz atma, satış, mesajlaşma ve canlı yayın imkânı sunan ulusal bir platform.', about_version_label:'Sürüm',
     },
     it: {
       app_title:'Mercato Nazionale del Pollame', welcome_title:'Benvenuto', welcome_sub:'Crea un account o accedi con la tua email e password.',
@@ -2949,6 +3010,17 @@ button.submit{padding:14px;}
       commune_label:'Comune', commune_label_intl:'Città',
       account_type_label:'Tipo di account', trader_label:'Commerciante', breeder_label:'Allevatore', register_btn:'Crea account',
       nav_home:'Home', nav_live:'Live', nav_messages:'Messaggi', nav_profile:'Profilo', app_language_label:'Lingua dell’app',
+      app_title2:'Mercato del Pollame', nav_publish:'Pubblica annuncio', nav_market:'Mercato', nav_posts:'Post', nav_complaints:'Reclami e suggerimenti', nav_settings:'Impostazioni', nav_admin:'Amministrazione', nav_subscription:'Abbonamento',
+      h_publish:'Pubblica un annuncio di vendita', h_market:'Mercato', h_live:'Diretta 🔴', h_messages:'Messaggi', h_posts:'Post', h_complaints:'Reclami e suggerimenti', h_settings:'Impostazioni', h_admin:'Pannello di amministrazione', h_subscription:'Abbonamento',
+      s_account:'Account e profilo', s_password:'Cambia password', s_contact:'Telefono ed email', s_notifications:'Notifiche', s_language:'Lingua', s_theme:'Modalità scura', s_fontsize:'Dimensione testo', s_activity:'Stato attività', s_about:"Informazioni sull'app",
+      menu_title:'Menu', logout_btn:'Disconnetti', notif_title:'Notifiche', notif_close:'Chiudi',
+      settings_back:'Indietro', theme_light:'Chiaro', theme_dark:'Scuro',
+      acc_type_label:'Tipo di account', acc_location_label:'Provincia / Comune', acc_country_label:'Paese', edit_profile_btn:'Modifica profilo',
+      new_password_label:'Nuova password', new_password_placeholder:'Almeno 6 caratteri', confirm_password_label:'Conferma password', confirm_password_placeholder:'Reinserisci la password', save_password_btn:'Salva password',
+      phone_label:'Numero di telefono', email_label:'Email', email_change_hint:"Quando cambi l'email, un messaggio di conferma verrà inviato al nuovo indirizzo.", save_contact_btn:'Salva modifiche',
+      allow_notifications_label:'Consenti notifiche', notif_off_hint:"Se disattivato, non riceverai le notifiche dell'app. Questa scelta può essere mantenuta anche dopo il logout.",
+      fs_small:'Piccolo', fs_medium:'Medio (predefinito)', fs_large:'Grande', show_activity_label:'Mostra il mio stato di attività agli altri',
+      about_app_name_label:"Nome dell'app", about_desc_label:'Descrizione', about_desc_value:"Una piattaforma nazionale che collega gli allevatori di pollame ai commercianti, per navigare, vendere, messaggiare e trasmettere in diretta.", about_version_label:'Versione',
     },
     pt: {
       app_title:'Mercado Nacional Avícola', welcome_title:'Bem-vindo', welcome_sub:'Crie uma conta ou entre com seu e-mail e senha.',
@@ -2961,6 +3033,17 @@ button.submit{padding:14px;}
       commune_label:'Município', commune_label_intl:'Cidade',
       account_type_label:'Tipo de conta', trader_label:'Comerciante', breeder_label:'Criador', register_btn:'Criar conta',
       nav_home:'Início', nav_live:'Ao vivo', nav_messages:'Mensagens', nav_profile:'Perfil', app_language_label:'Idioma do aplicativo',
+      app_title2:'Mercado Avícola', nav_publish:'Publicar anúncio', nav_market:'Mercado', nav_posts:'Publicações', nav_complaints:'Reclamações e sugestões', nav_settings:'Configurações', nav_admin:'Administração', nav_subscription:'Assinatura',
+      h_publish:'Publicar um anúncio de venda', h_market:'Mercado', h_live:'Transmissão ao vivo 🔴', h_messages:'Mensagens', h_posts:'Publicações', h_complaints:'Reclamações e sugestões', h_settings:'Configurações', h_admin:'Painel de administração', h_subscription:'Assinatura',
+      s_account:'Conta e perfil', s_password:'Alterar senha', s_contact:'Telefone e e-mail', s_notifications:'Notificações', s_language:'Idioma', s_theme:'Modo escuro', s_fontsize:'Tamanho da fonte', s_activity:'Status de atividade', s_about:'Sobre o app',
+      menu_title:'Menu', logout_btn:'Sair', notif_title:'Notificações', notif_close:'Fechar',
+      settings_back:'Voltar', theme_light:'Claro', theme_dark:'Escuro',
+      acc_type_label:'Tipo de conta', acc_location_label:'Província / Município', acc_country_label:'País', edit_profile_btn:'Editar perfil',
+      new_password_label:'Nova senha', new_password_placeholder:'Mínimo de 6 caracteres', confirm_password_label:'Confirmar senha', confirm_password_placeholder:'Digite a senha novamente', save_password_btn:'Salvar senha',
+      phone_label:'Número de telefone', email_label:'E-mail', email_change_hint:'Ao alterar seu e-mail, uma mensagem de confirmação será enviada para o novo endereço.', save_contact_btn:'Salvar alterações',
+      allow_notifications_label:'Permitir notificações', notif_off_hint:'Quando desativado, você não receberá notificações do app. Essa escolha pode ser mantida mesmo após sair da conta.',
+      fs_small:'Pequeno', fs_medium:'Médio (padrão)', fs_large:'Grande', show_activity_label:'Mostrar meu status de atividade para outros',
+      about_app_name_label:'Nome do app', about_desc_label:'Descrição', about_desc_value:'Uma plataforma nacional que conecta criadores de aves a comerciantes, para navegar, vender, enviar mensagens e transmitir ao vivo.', about_version_label:'Versão',
     },
     nl: {
       app_title:'Nationale Pluimveemarkt', welcome_title:'Welkom', welcome_sub:'Maak een account aan of log in met je e-mail en wachtwoord.',
@@ -2973,6 +3056,17 @@ button.submit{padding:14px;}
       commune_label:'Gemeente', commune_label_intl:'Stad',
       account_type_label:'Accounttype', trader_label:'Handelaar', breeder_label:'Kweker', register_btn:'Account aanmaken',
       nav_home:'Home', nav_live:'Live', nav_messages:'Berichten', nav_profile:'Profiel', app_language_label:'App-taal',
+      app_title2:'Pluimveemarkt', nav_publish:'Advertentie plaatsen', nav_market:'Markt', nav_posts:'Berichten', nav_complaints:'Klachten & suggesties', nav_settings:'Instellingen', nav_admin:'Beheer', nav_subscription:'Abonnement',
+      h_publish:'Verkoopadvertentie plaatsen', h_market:'Markt', h_live:'Live-uitzending 🔴', h_messages:'Berichten', h_posts:'Berichten', h_complaints:'Klachten & suggesties', h_settings:'Instellingen', h_admin:'Beheerpaneel', h_subscription:'Abonnement',
+      s_account:'Account & profiel', s_password:'Wachtwoord wijzigen', s_contact:'Telefoon & e-mail', s_notifications:'Meldingen', s_language:'Taal', s_theme:'Donkere modus', s_fontsize:'Lettergrootte', s_activity:'Activiteitsstatus', s_about:'Over de app',
+      menu_title:'Menu', logout_btn:'Uitloggen', notif_title:'Meldingen', notif_close:'Sluiten',
+      settings_back:'Terug', theme_light:'Licht', theme_dark:'Donker',
+      acc_type_label:'Accounttype', acc_location_label:'Provincie / Gemeente', acc_country_label:'Land', edit_profile_btn:'Profiel bewerken',
+      new_password_label:'Nieuw wachtwoord', new_password_placeholder:'Minimaal 6 tekens', confirm_password_label:'Wachtwoord bevestigen', confirm_password_placeholder:'Wachtwoord opnieuw invoeren', save_password_btn:'Wachtwoord opslaan',
+      phone_label:'Telefoonnummer', email_label:'E-mail', email_change_hint:'Als u uw e-mail wijzigt, wordt een bevestigingsbericht naar het nieuwe adres gestuurd.', save_contact_btn:'Wijzigingen opslaan',
+      allow_notifications_label:'Meldingen toestaan', notif_off_hint:'Indien uitgeschakeld, ontvangt u geen app-meldingen meer. Deze keuze kan behouden blijven na uit- en inloggen.',
+      fs_small:'Klein', fs_medium:'Gemiddeld (standaard)', fs_large:'Groot', show_activity_label:'Mijn activiteitsstatus aan anderen tonen',
+      about_app_name_label:'App-naam', about_desc_label:'Beschrijving', about_desc_value:'Een nationaal platform dat pluimveehouders verbindt met handelaren, om te bladeren, verkopen, chatten en live uit te zenden.', about_version_label:'Versie',
     },
     ru: {
       app_title:'Национальный рынок птицы', welcome_title:'Добро пожаловать', welcome_sub:'Создайте аккаунт или войдите с email и паролем.',
@@ -2985,6 +3079,17 @@ button.submit{padding:14px;}
       commune_label:'Район', commune_label_intl:'Город',
       account_type_label:'Тип аккаунта', trader_label:'Торговец', breeder_label:'Птицевод', register_btn:'Создать аккаунт',
       nav_home:'Главная', nav_live:'Прямой эфир', nav_messages:'Сообщения', nav_profile:'Профиль', app_language_label:'Язык приложения',
+      app_title2:'Рынок птицы', nav_publish:'Разместить объявление', nav_market:'Рынок', nav_posts:'Публикации', nav_complaints:'Жалобы и предложения', nav_settings:'Настройки', nav_admin:'Администрирование', nav_subscription:'Подписка',
+      h_publish:'Разместить объявление о продаже', h_market:'Рынок', h_live:'Прямая трансляция 🔴', h_messages:'Сообщения', h_posts:'Публикации', h_complaints:'Жалобы и предложения', h_settings:'Настройки', h_admin:'Панель администратора', h_subscription:'Подписка',
+      s_account:'Аккаунт и профиль', s_password:'Сменить пароль', s_contact:'Телефон и email', s_notifications:'Уведомления', s_language:'Язык', s_theme:'Тёмный режим', s_fontsize:'Размер шрифта', s_activity:'Статус активности', s_about:'О приложении',
+      menu_title:'Меню', logout_btn:'Выйти', notif_title:'Уведомления', notif_close:'Закрыть',
+      settings_back:'Назад', theme_light:'Светлая', theme_dark:'Тёмная',
+      acc_type_label:'Тип аккаунта', acc_location_label:'Область / Коммуна', acc_country_label:'Страна', edit_profile_btn:'Редактировать профиль',
+      new_password_label:'Новый пароль', new_password_placeholder:'Минимум 6 символов', confirm_password_label:'Подтвердите пароль', confirm_password_placeholder:'Введите пароль ещё раз', save_password_btn:'Сохранить пароль',
+      phone_label:'Номер телефона', email_label:'Электронная почта', email_change_hint:'При смене email на новый адрес будет отправлено письмо с подтверждением.', save_contact_btn:'Сохранить изменения',
+      allow_notifications_label:'Разрешить уведомления', notif_off_hint:'При отключении вы не будете получать уведомления приложения. Этот выбор может сохраниться даже после выхода из аккаунта.',
+      fs_small:'Маленький', fs_medium:'Средний (по умолчанию)', fs_large:'Большой', show_activity_label:'Показывать мой статус активности другим',
+      about_app_name_label:'Название приложения', about_desc_label:'Описание', about_desc_value:'Национальная платформа, объединяющая птицеводов с торговцами: просмотр, продажа, обмен сообщениями и прямые трансляции.', about_version_label:'Версия',
     },
   };
   let currentLang = 'ar';
@@ -3007,11 +3112,28 @@ button.submit{padding:14px;}
     }
     sel.value = currentLang;
   }
-  function applyLanguage(langCode) {
+  function showLangOverlay() {
+    let ov = document.getElementById('langSwitchOverlay');
+    if (!ov) {
+      ov = document.createElement('div');
+      ov.id = 'langSwitchOverlay';
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(20,30,20,.55);z-index:99999;display:flex;align-items:center;justify-content:center;';
+      ov.innerHTML = '<div style="background:#fff;border-radius:16px;padding:22px 30px;font-family:\'Cairo\',sans-serif;font-weight:700;color:var(--barn-green,#1F5233);display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.25);"><span style="width:18px;height:18px;border:3px solid #cde3d4;border-top-color:#1F5233;border-radius:50%;display:inline-block;animation:sokSpin .7s linear infinite;"></span><span id="langSwitchOverlayText">…</span></div><style>@keyframes sokSpin{to{transform:rotate(360deg)}}</style>';
+      document.body.appendChild(ov);
+    }
+    ov.style.display = 'flex';
+  }
+  function hideLangOverlay() {
+    const ov = document.getElementById('langSwitchOverlay');
+    if (ov) ov.style.display = 'none';
+  }
+
+  async function applyLanguage(langCode) {
     const lang = TRANSLATIONS[langCode] ? langCode : 'ar';
     currentLang = lang;
     const dict = TRANSLATIONS[lang];
     const base = TRANSLATIONS.ar;
+    if (lang !== 'ar') showLangOverlay();
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     try { localStorage.setItem('sokAppLang', lang); } catch (e) {}
@@ -3029,9 +3151,16 @@ button.submit{padding:14px;}
     if (communeLabel) communeLabel.textContent = (selectedCountry === 'DZ') ? dict.commune_label : dict.commune_label_intl;
 
     // ترجمة تلقائية شاملة لبقية نصوص التطبيق (كل شي عدا محتوى المستخدم: منشوراته وإعلاناته)
-    translatePage(document.body, lang);
+    // يُنتظر اكتمالها بالكامل (مرتين إن لزم) قبل إخفاء شاشة التحميل، لضمان عدم ظهور خلط بين اللغات
+    try {
+      await translatePage(document.body, lang);
+      // محاولة ثانية للعناصر التي قد تكون فشلت بسبب الشبكة في المحاولة الأولى
+      await translatePage(document.body, lang);
+    } catch (e) {}
     startTranslationObserver();
+    hideLangOverlay();
   }
+
 
   // ===== محرك الترجمة التلقائية الشامل (عبر Gemini) =====
   // العناصر المستثناة: محتوى المنشورات/الإعلانات النصي، أسماء المستخدمين، وحقول الإدخال
@@ -8318,6 +8447,9 @@ button.submit{padding:14px;}
       if (e.key === 'Enter') { e.preventDefault(); sendAssistantMessage(); }
     });
   })();
+
+  // تطبيق اللغة المحفوظة (يُنفَّذ هنا، بعد اكتمال تعريف كل متغيرات الصفحة، لتفادي أي خطأ تهيئة)
+  applyLanguage(localStorage.getItem('sokAppLang') || localStorage.getItem('appLang') || 'ar');
 })();
 </script>
 </body>
