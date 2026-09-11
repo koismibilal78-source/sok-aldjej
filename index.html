@@ -496,7 +496,8 @@
   .post-bg-wheat{background:linear-gradient(135deg,#e8c96b,#8a6a1f);}
   .post-bg-brown{background:linear-gradient(135deg,#8a5a3b,#4a3320);}
   /* منتقي لون خلفية المنشور عند النشر */
-  .post-bg-picker{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+  .post-bg-picker{display:none;flex-wrap:wrap;gap:10px;margin-top:10px;}
+  .post-bg-picker.open{display:flex;}
   .post-bg-swatch{
     width:36px;height:36px;border-radius:9px;
     cursor:pointer;border:2px solid transparent;
@@ -539,6 +540,10 @@
   .post-emoji-toggle-btn.active{border-color:var(--gold,#c9a227);}
   .post-emoji-bar{display:none;flex-wrap:wrap;gap:6px;margin-top:8px;}
   .post-emoji-bar.open{display:flex;}
+  .bg-toggle-btn{display:inline-flex;align-items:center;gap:6px;background:var(--card,#fff);border:1px solid var(--border,#e4ddcf);border-radius:20px;padding:7px 14px;font-size:calc(13px * var(--fs-scale));font-family:'Cairo',sans-serif;cursor:pointer;margin-top:6px;-webkit-tap-highlight-color:transparent;}
+  .bg-toggle-btn.active{border-color:var(--gold,#c9a227);}
+  .rec-dot{width:10px;height:10px;border-radius:50%;background:#e53935;display:inline-block;animation:recPulse 1s infinite;flex-shrink:0;}
+  @keyframes recPulse{0%{opacity:1;}50%{opacity:.25;}100%{opacity:1;}}
   .post-emoji-btn{
     background:#f1efe8;border:1px solid var(--border,#e4ddcf);border-radius:8px;
     padding:5px 9px;font-size:calc(17px * var(--fs-scale));cursor:pointer;line-height:1;
@@ -1608,6 +1613,14 @@ button.submit{padding:14px;}
 </div>
 
 <div id="debugPanel" class="no-translate"></div>
+
+<div id="authLangSwitcher" class="no-translate" style="position:fixed;bottom:16px;left:16px;z-index:9998;">
+  <button type="button" id="authLangBtn" style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e1e9e4;border-radius:20px;padding:8px 14px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;color:#315a47;box-shadow:0 4px 14px rgba(21,42,32,.12);cursor:pointer;">
+    🌐 <span id="authLangBtnLabel">العربية</span>
+  </button>
+  <div id="authLangMenu" style="display:none;position:absolute;bottom:44px;left:0;background:#fff;border:1px solid #e1e9e4;border-radius:14px;box-shadow:0 8px 24px rgba(21,42,32,.18);overflow:hidden;min-width:150px;"></div>
+</div>
+
 <div class="wrap">
   <div class="eyebrow" data-i18n="app_title">سوق الدجاج الوطني</div>
   <h1 data-i18n="welcome_title">أهلاً بك</h1>
@@ -1986,6 +1999,7 @@ button.submit{padding:14px;}
 
       <div class="field">
         <label>لون خلفية الإعلان (اختياري — يظهر فقط إن لم تُرفق صور)</label>
+        <button type="button" id="listBgToggle" class="bg-toggle-btn">🎨 لون الخلفية</button>
         <div class="post-bg-picker" id="listBgPicker">
           <div class="post-bg-swatch none-swatch selected" data-bg="">بدون</div>
           <div class="post-bg-swatch post-bg-green" data-bg="post-bg-green"></div>
@@ -2023,7 +2037,7 @@ button.submit{padding:14px;}
         <div class="mcc-item" data-cat="equipment">🏚️ تجهيزات</div>
       </div>
 
-      <div class="field" style="margin-bottom:6px;">
+      <div class="field" style="margin-bottom:6px;display:none;">
         <label for="filterCountry">الدولة</label>
         <select id="filterCountry" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:'Cairo',sans-serif;"></select>
       </div>
@@ -2092,7 +2106,17 @@ button.submit{padding:14px;}
         <div class="field">
           <textarea id="threadInput" placeholder="اكتب رسالتك..."></textarea>
         </div>
-        <button type="button" class="submit" id="sendMessageBtn">إرسال</button>
+        <div id="voiceRecordBar" style="display:none;align-items:center;gap:10px;background:#fdf3e0;border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;">
+          <span class="rec-dot"></span>
+          <span id="voiceRecordTimer">00:00</span>
+          <span style="flex:1;color:var(--muted);font-size:calc(13px * var(--fs-scale));">جارٍ التسجيل... (الحد الأقصى دقيقة)</span>
+          <button type="button" id="voiceCancelBtn" style="background:none;border:none;color:#b33;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;">إلغاء</button>
+          <button type="button" id="voiceSendBtn" class="submit" style="width:auto;padding:8px 16px;margin:0;">إرسال 🎤</button>
+        </div>
+        <div id="voiceIdleRow" style="display:flex;gap:8px;">
+          <button type="button" id="voiceRecordBtn" title="تسجيل صوتي" style="background:#fff;border:1px solid var(--border);border-radius:50%;width:44px;height:44px;font-size:18px;cursor:pointer;flex-shrink:0;">🎤</button>
+          <button type="button" class="submit" id="sendMessageBtn" style="flex:1;margin:0;">إرسال</button>
+        </div>
         <div id="threadMsg" class="msg"></div>
       </div>
     </div>
@@ -2108,6 +2132,7 @@ button.submit{padding:14px;}
           <textarea id="postContent" placeholder="اكتب منشورك هنا..."></textarea>
           <button type="button" id="postEmojiToggle" class="post-emoji-toggle-btn" aria-label="إظهار الرموز التعبيرية" title="رموز تعبيرية">🙂</button>
         </div>
+        <button type="button" id="postBgToggle" class="bg-toggle-btn">🎨 لون الخلفية</button>
         <div class="post-bg-picker" id="postBgPicker">
           <div class="post-bg-swatch none-swatch selected" data-bg="">بدون</div>
           <div class="post-bg-swatch post-bg-green" data-bg="post-bg-green"></div>
@@ -2844,6 +2869,7 @@ button.submit{padding:14px;}
     { code:'AU', name:'أستراليا',       flag:'🇦🇺', dial:'+61',  currency:'$',   locale:'en-AU', lang:'en' },
   ];
   const DEFAULT_COUNTRY = 'DZ';
+  let selectedCountry = DEFAULT_COUNTRY;
   const WILAYAS = [
     'أدرار','الشلف','الأغواط','أم البواقي','باتنة','بجاية','بسكرة','بشار','البليدة','البويرة',
     'تمنراست','تبسة','تلمسان','تيارت','تيزي وزو','الجزائر','الجلفة','جيجل','سطيف','سعيدة',
@@ -3097,6 +3123,30 @@ button.submit{padding:14px;}
     ar:'العربية', fr:'Français', en:'English', es:'Español', de:'Deutsch',
     tr:'Türkçe', it:'Italiano', pt:'Português', nl:'Nederlands', ru:'Русский',
   };
+  function initAuthLangSwitcher() {
+    const btn = document.getElementById('authLangBtn');
+    const menu = document.getElementById('authLangMenu');
+    const label = document.getElementById('authLangBtnLabel');
+    if (!btn || !menu || menu.dataset.ready) return;
+    menu.dataset.ready = '1';
+    menu.innerHTML = Object.keys(TRANSLATIONS).map(code =>
+      '<div class="auth-lang-opt" data-lang="' + code + '" style="padding:11px 16px;font-family:\'Cairo\',sans-serif;font-size:13px;color:#315a47;cursor:pointer;">' +
+      (LANG_NATIVE_NAMES[code] || code) + '</div>'
+    ).join('');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
+    });
+    menu.querySelectorAll('.auth-lang-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        try { localStorage.setItem('sokAppLangManual', '1'); } catch (e) {}
+        applyLanguage(opt.dataset.lang);
+        menu.style.display = 'none';
+      });
+    });
+    document.addEventListener('click', () => { menu.style.display = 'none'; });
+    if (label) label.textContent = LANG_NATIVE_NAMES[currentLang] || currentLang;
+  }
   function initSettingsLangSelect() {
     const sel = document.getElementById('settingsLangSelect');
     if (!sel) return;
@@ -3137,6 +3187,8 @@ button.submit{padding:14px;}
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     try { localStorage.setItem('sokAppLang', lang); } catch (e) {}
+    const authLangLabel = document.getElementById('authLangBtnLabel');
+    if (authLangLabel) authLangLabel.textContent = LANG_NATIVE_NAMES[lang] || lang;
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       el.textContent = dict[key] || base[key] || el.textContent;
@@ -3165,6 +3217,8 @@ button.submit{padding:14px;}
   // ===== محرك الترجمة التلقائية الشامل (عبر Gemini) =====
   // العناصر المستثناة: محتوى المنشورات/الإعلانات النصي، أسماء المستخدمين، وحقول الإدخال
   const NO_TRANSLATE_SELECTOR = '.no-translate, .owner-name, script, style, textarea, [contenteditable]';
+  // نفس الاستثناء لكن بدون textarea: العنصر مستثنى من ترجمة محتواه (نص المستخدم) لكن ليس من ترجمة الـ placeholder التوضيحي فيه
+  const NO_TRANSLATE_PLACEHOLDER_SELECTOR = '.no-translate, .owner-name, script, style, [contenteditable]';
   function isArabicText(t) { return /[\u0600-\u06FF]/.test(t); }
 
   function collectTextNodes(root) {
@@ -3246,7 +3300,7 @@ button.submit{padding:14px;}
   }
 
   async function translatePlaceholders(root, lang) {
-    const phEls = Array.from(root.querySelectorAll('[placeholder]')).filter(el => !el.closest(NO_TRANSLATE_SELECTOR));
+    const phEls = Array.from(root.querySelectorAll('[placeholder]')).filter(el => !el.closest(NO_TRANSLATE_PLACEHOLDER_SELECTOR));
     phEls.forEach(el => { if (el._sokOrigPh === undefined) el._sokOrigPh = el.getAttribute('placeholder'); });
     if (lang === 'ar') {
       phEls.forEach(el => { if (el._sokOrigPh) el.setAttribute('placeholder', el._sokOrigPh); });
@@ -3497,7 +3551,6 @@ button.submit{padding:14px;}
     });
   });
 
-  let selectedCountry = DEFAULT_COUNTRY;
   (function initCountrySelect() {
     const wrap = document.getElementById('regCountrySelect');
     const box = document.getElementById('regCountryBox');
@@ -3639,6 +3692,8 @@ button.submit{padding:14px;}
 
   async function enterApp() {
     document.getElementById('tabsBar').style.display = 'none';
+    const authLangSwitcherEl = document.getElementById('authLangSwitcher');
+    if (authLangSwitcherEl) authLangSwitcherEl.style.display = 'none';
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-app').classList.add('active');
     document.getElementById('subscriptionTabBtn').style.display = 'flex';
@@ -4000,7 +4055,7 @@ button.submit{padding:14px;}
     if (!el) return;
     el.innerHTML = '<div class="empty-state">جارٍ تحميل المنشورات...</div>';
     try {
-      const { data, error } = await supabase.from('posts').select('id, user_id, content, category, phone, image_url, image_urls, video_url, status, created_at, latitude, longitude, bg_style').eq('status','approved').order('created_at',{ascending:false});
+      const { data, error } = await supabase.from('posts').select('id, user_id, content, category, phone, image_url, image_urls, video_url, status, created_at, latitude, longitude, bg_style, country_code').eq('status','approved').eq('country_code', (currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY).order('created_at',{ascending:false});
       if (error) throw error;
       const ids = [...new Set((data || []).map(p => p.user_id).filter(Boolean))];
       let nameMap={}, avatarMap={}, wilayaMap={}, communeMap={};
@@ -4059,6 +4114,7 @@ button.submit{padding:14px;}
       .from('listings')
       .select('id, category, chicken_type, item_name, unit, price, wilaya, commune, status, created_at, country_code')
       .eq('status', 'active')
+      .eq('country_code', (currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY)
       .order('created_at', { ascending: false })
       .limit(6);
 
@@ -5703,7 +5759,7 @@ button.submit{padding:14px;}
     const { data: { user } } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from('messages')
-      .select('id, sender_id, receiver_id, listing_id, content, is_read, created_at')
+      .select('id, sender_id, receiver_id, listing_id, content, is_read, created_at, audio_url')
       .or('sender_id.eq.' + user.id + ',receiver_id.eq.' + user.id)
       .order('created_at', { ascending: false });
 
@@ -5725,7 +5781,7 @@ button.submit{padding:14px;}
         conversations[key] = {
           otherId: otherId,
           listingId: m.listing_id,
-          lastMessage: m.content,
+          lastMessage: m.audio_url ? '🎤 رسالة صوتية' : m.content,
           lastSenderId: m.sender_id,
           lastTime: m.created_at,
           unread: 0,
@@ -5812,7 +5868,7 @@ button.submit{padding:14px;}
 
     let query = supabase
       .from('messages')
-      .select('id, sender_id, receiver_id, content, created_at, is_read')
+      .select('id, sender_id, receiver_id, content, created_at, is_read, audio_url, audio_duration')
       .or('and(sender_id.eq.' + user.id + ',receiver_id.eq.' + otherUserId + '),and(sender_id.eq.' + otherUserId + ',receiver_id.eq.' + user.id + ')')
       .order('created_at', { ascending: true });
 
@@ -5835,7 +5891,22 @@ button.submit{padding:14px;}
     data.forEach(m => {
       const bubble = document.createElement('div');
       bubble.className = 'bubble ' + (m.sender_id === user.id ? 'mine' : 'theirs');
-      bubble.textContent = m.content;
+      if (m.audio_url) {
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = m.audio_url;
+        audio.style.maxWidth = '220px';
+        audio.style.display = 'block';
+        bubble.appendChild(audio);
+        if (m.content) {
+          const cap = document.createElement('div');
+          cap.style.marginTop = '4px';
+          cap.textContent = m.content;
+          bubble.appendChild(cap);
+        }
+      } else {
+        bubble.textContent = m.content;
+      }
       threadEl.appendChild(bubble);
     });
 
@@ -5898,7 +5969,134 @@ button.submit{padding:14px;}
     }
   });
 
-  // ----- التقييم -----
+  // ----- التسجيل الصوتي -----
+  const VOICE_MAX_SECONDS = 60;
+  let voiceRecorder = null;
+  let voiceChunks = [];
+  let voiceStream = null;
+  let voiceStartTime = 0;
+  let voiceTimerInterval = null;
+  let voiceStopReason = 'send'; // 'send' أو 'cancel'
+
+  function pickAudioMimeType() {
+    const candidates = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
+    for (const c of candidates) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) return c;
+    }
+    return '';
+  }
+
+  function formatVoiceTimer(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = Math.floor(sec % 60).toString().padStart(2, '0');
+    return m + ':' + s;
+  }
+
+  function stopVoiceStreamTracks() {
+    if (voiceStream) {
+      voiceStream.getTracks().forEach(t => t.stop());
+      voiceStream = null;
+    }
+  }
+
+  function resetVoiceUI() {
+    clearInterval(voiceTimerInterval);
+    voiceTimerInterval = null;
+    document.getElementById('voiceRecordBar').style.display = 'none';
+    document.getElementById('voiceIdleRow').style.display = 'flex';
+    document.getElementById('voiceRecordTimer').textContent = '00:00';
+  }
+
+  document.getElementById('voiceRecordBtn').addEventListener('click', async () => {
+    const msgEl = document.getElementById('threadMsg');
+    msgEl.style.display = 'none';
+    try {
+      voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      log('تعذر الوصول إلى الميكروفون: ' + err.message, true);
+      showMsg(msgEl, 'تعذر الوصول إلى الميكروفون. تأكد من منح الإذن للتطبيق.', 'err');
+      return;
+    }
+    const mimeType = pickAudioMimeType();
+    try {
+      voiceRecorder = mimeType ? new MediaRecorder(voiceStream, { mimeType }) : new MediaRecorder(voiceStream);
+    } catch (err) {
+      log('تعذر بدء التسجيل الصوتي: ' + err.message, true);
+      showMsg(msgEl, 'التسجيل الصوتي غير مدعوم على هذا المتصفح.', 'err');
+      stopVoiceStreamTracks();
+      return;
+    }
+    voiceChunks = [];
+    voiceStopReason = 'send';
+    voiceRecorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) voiceChunks.push(e.data); };
+
+    voiceRecorder.onstop = async () => {
+      stopVoiceStreamTracks();
+      const elapsedSec = Math.min(VOICE_MAX_SECONDS, Math.round((Date.now() - voiceStartTime) / 1000));
+      resetVoiceUI();
+      if (voiceStopReason === 'cancel' || voiceChunks.length === 0) { voiceChunks = []; return; }
+
+      const blobType = (voiceRecorder && voiceRecorder.mimeType) || mimeType || 'audio/webm';
+      const blob = new Blob(voiceChunks, { type: blobType });
+      voiceChunks = [];
+      if (blob.size === 0) return;
+
+      const ext = blobType.includes('ogg') ? 'ogg' : (blobType.includes('mp4') ? 'm4a' : 'webm');
+      const file = new File([blob], 'voice_' + Date.now() + '.' + ext, { type: blobType });
+
+      showMsg(msgEl, 'جارٍ رفع الرسالة الصوتية...', 'ok');
+      try {
+        const audioUrl = await uploadPostMedia(file, 'voice-messages');
+        const { data: { user } } = await supabase.auth.getUser();
+        const payload = {
+          sender_id: user.id,
+          receiver_id: currentThread.otherUserId,
+          content: null,
+          audio_url: audioUrl,
+          audio_duration: elapsedSec,
+          is_read: false,
+        };
+        if (currentThread.listingId) payload.listing_id = currentThread.listingId;
+        const { error } = await supabase.from('messages').insert(payload);
+        if (error) throw error;
+        log('تم إرسال رسالة صوتية بنجاح (' + elapsedSec + ' ثانية)');
+        msgEl.style.display = 'none';
+        await openThread(currentThread.otherUserId, currentThread.listingId, currentThread.otherName);
+      } catch (err) {
+        log('فشل إرسال الرسالة الصوتية: ' + (err.message || err), true);
+        showMsg(msgEl, 'حدث خطأ أثناء إرسال الرسالة الصوتية: ' + (err.message || err), 'err');
+      }
+    };
+
+    voiceRecorder.start();
+    voiceStartTime = Date.now();
+    document.getElementById('voiceIdleRow').style.display = 'none';
+    document.getElementById('voiceRecordBar').style.display = 'flex';
+    document.getElementById('voiceRecordTimer').textContent = '00:00';
+
+    voiceTimerInterval = setInterval(() => {
+      const elapsed = (Date.now() - voiceStartTime) / 1000;
+      document.getElementById('voiceRecordTimer').textContent = formatVoiceTimer(elapsed);
+      if (elapsed >= VOICE_MAX_SECONDS) {
+        // بلغ الحد الأقصى (دقيقة واحدة) — إرسال تلقائي
+        voiceStopReason = 'send';
+        if (voiceRecorder && voiceRecorder.state !== 'inactive') voiceRecorder.stop();
+      }
+    }, 250);
+  });
+
+  document.getElementById('voiceCancelBtn').addEventListener('click', () => {
+    voiceStopReason = 'cancel';
+    if (voiceRecorder && voiceRecorder.state !== 'inactive') voiceRecorder.stop();
+    else { stopVoiceStreamTracks(); resetVoiceUI(); }
+  });
+
+  document.getElementById('voiceSendBtn').addEventListener('click', () => {
+    voiceStopReason = 'send';
+    if (voiceRecorder && voiceRecorder.state !== 'inactive') voiceRecorder.stop();
+  });
+
+
   document.getElementById('rateUserBtn').addEventListener('click', () => {
     log('تم الضغط على زر تقييم المستخدم');
     const rateCard = document.getElementById('rateCard');
@@ -5964,6 +6162,8 @@ button.submit{padding:14px;}
     document.getElementById('adminTabBtn').style.display = 'none';
     document.getElementById('bottomNav').style.display = 'none';
     closeSidebar();
+    const authLangSwitcherEl2 = document.getElementById('authLangSwitcher');
+    if (authLangSwitcherEl2) authLangSwitcherEl2.style.display = 'block';
   });
 
   document.getElementById('subscriptionFooterBtn').addEventListener('click', () => {
@@ -6509,7 +6709,15 @@ button.submit{padding:14px;}
   (function initListingBgPicker() {
     const picker = document.getElementById('listBgPicker');
     const notesEl = document.getElementById('notes');
+    const toggleBtn = document.getElementById('listBgToggle');
     if (!picker) return;
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const willOpen = !picker.classList.contains('open');
+        picker.classList.toggle('open', willOpen);
+        toggleBtn.classList.toggle('active', willOpen);
+      });
+    }
     picker.addEventListener('click', (e) => {
       const sw = e.target.closest('.post-bg-swatch');
       if (!sw || !picker.contains(sw)) return;
@@ -6527,8 +6735,11 @@ button.submit{padding:14px;}
     selectedListingBg = '';
     const picker = document.getElementById('listBgPicker');
     const notesEl = document.getElementById('notes');
+    const toggleBtn = document.getElementById('listBgToggle');
     if (notesEl) notesEl.classList.remove(...POST_BG_CLASSES);
     if (!picker) return;
+    picker.classList.remove('open');
+    if (toggleBtn) toggleBtn.classList.remove('active');
     picker.querySelectorAll('.post-bg-swatch').forEach(s => s.classList.remove('selected'));
     const none = picker.querySelector('.none-swatch');
     if (none) none.classList.add('selected');
@@ -6565,7 +6776,15 @@ button.submit{padding:14px;}
   (function initPostBgPicker() {
     const picker = document.getElementById('postBgPicker');
     const textarea = document.getElementById('postContent');
+    const toggleBtn = document.getElementById('postBgToggle');
     if (!picker) return;
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const willOpen = !picker.classList.contains('open');
+        picker.classList.toggle('open', willOpen);
+        toggleBtn.classList.toggle('active', willOpen);
+      });
+    }
     picker.addEventListener('click', (e) => {
       const sw = e.target.closest('.post-bg-swatch');
       if (!sw || !picker.contains(sw)) return;
@@ -6583,8 +6802,11 @@ button.submit{padding:14px;}
     selectedPostBg = '';
     const picker = document.getElementById('postBgPicker');
     const textarea = document.getElementById('postContent');
+    const toggleBtn = document.getElementById('postBgToggle');
     if (textarea) textarea.classList.remove(...POST_BG_CLASSES);
     if (!picker) return;
+    picker.classList.remove('open');
+    if (toggleBtn) toggleBtn.classList.remove('active');
     picker.querySelectorAll('.post-bg-swatch').forEach(s => s.classList.remove('selected'));
     const none = picker.querySelector('.none-swatch');
     if (none) none.classList.add('selected');
@@ -7142,6 +7364,7 @@ button.submit{padding:14px;}
         .from('posts')
         .select('id, user_id, content, category, phone, image_url, image_urls, video_url, status, created_at, latitude, longitude, bg_style, country_code')
         .eq('status', 'approved')
+        .eq('country_code', (currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -8449,6 +8672,7 @@ button.submit{padding:14px;}
   })();
 
   // تطبيق اللغة المحفوظة (يُنفَّذ هنا، بعد اكتمال تعريف كل متغيرات الصفحة، لتفادي أي خطأ تهيئة)
+  initAuthLangSwitcher();
   applyLanguage(localStorage.getItem('sokAppLang') || localStorage.getItem('appLang') || 'ar');
 })();
 </script>
