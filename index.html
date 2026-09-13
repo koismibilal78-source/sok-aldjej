@@ -4882,7 +4882,7 @@ button.submit{padding:14px;}
       const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from('notifications')
-        .select('id, type, title, body, listing_id, is_read, created_at')
+        .select('id, type, title, body, listing_id, related_user_id, is_read, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(30);
@@ -4910,7 +4910,20 @@ button.submit{padding:14px;}
           ${n.body ? '<div class="notif-body">' + n.body + '</div>' : ''}
           <div class="notif-time">${timeStr}</div>
         `;
-        div.addEventListener('click', () => markNotifRead(n.id, div));
+        div.addEventListener('click', () => {
+          markNotifRead(n.id, div);
+          document.getElementById('notifPanel').style.display = 'none';
+          document.getElementById('notifBackdrop').classList.remove('active');
+          if (n.type === 'message' && n.related_user_id) {
+            const senderName = (n.title || '').replace('رسالة جديدة من ', '') || 'مستخدم';
+            showAppTab('messages');
+            openThread(n.related_user_id, n.listing_id, senderName);
+          } else if (n.type === 'message') {
+            showAppTab('messages');
+          } else if (n.listing_id) {
+            showAppTab('market');
+          }
+        });
         listEl.appendChild(div);
       });
     } catch (err) {
@@ -7907,6 +7920,189 @@ button.submit{padding:14px;}
     });
   });
 
+  // ================== ميزة إنشاء تصميم الإعلان (قوالب محلية عبر Canvas، بدون الحاجة لـ Canva) ==================
+  const AD_DESIGN_TEMPLATES = [
+    { id: 'green',  name: 'أخضر كلاسيكي', bg1: '#152A20', bg2: '#1F4030', accent: '#C9A227', text: '#FAF5EB', badgeBg: '#C9A227', badgeText: '#152A20' },
+    { id: 'orange', name: 'برتقالي حيوي', bg1: '#E8621C', bg2: '#C9490F', accent: '#FFFFFF', text: '#FFFFFF', badgeBg: '#152A20', badgeText: '#E8C766' },
+    { id: 'cream',  name: 'كريمي أنيق',   bg1: '#FAF5EB', bg2: '#EDE1C6', accent: '#1F4030', text: '#2B2620', badgeBg: '#1F4030', badgeText: '#FAF5EB' },
+  ];
+
+  function roundRectPath(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function loadImageSafe(url) {
+    if (!url) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  }
+
+  async function drawAdDesignOnCanvas(canvas, templateId, data, imageUrl) {
+    try { await document.fonts.ready; } catch (e) {}
+    const tpl = AD_DESIGN_TEMPLATES.find(t => t.id === templateId) || AD_DESIGN_TEMPLATES[0];
+    const W = canvas.width, H = canvas.height;
+    const ctx = canvas.getContext('2d');
+    const scale = W / 600;
+
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, tpl.bg1);
+    grad.addColorStop(1, tpl.bg2);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = tpl.accent;
+    ctx.lineWidth = 4 * scale;
+    ctx.strokeRect(10 * scale, 10 * scale, W - 20 * scale, H - 20 * scale);
+
+    ctx.fillStyle = tpl.text;
+    ctx.textAlign = 'center';
+    ctx.font = `bold ${Math.round(28 * scale)}px Tajawal, sans-serif`;
+    ctx.fillText('🐔 سوق الدجاج', W / 2, 55 * scale);
+
+    const photoBoxY = 85 * scale, photoBoxSize = 260 * scale;
+    const photoX = (W - photoBoxSize) / 2;
+    ctx.save();
+    roundRectPath(ctx, photoX, photoBoxY, photoBoxSize, photoBoxSize, 20 * scale);
+    ctx.clip();
+    const img = await loadImageSafe(imageUrl);
+    if (img) {
+      const ir = img.width / img.height;
+      let dw = photoBoxSize, dh = photoBoxSize, dx = photoX, dy = photoBoxY;
+      if (ir > 1) { dw = photoBoxSize * ir; dx = photoX - (dw - photoBoxSize) / 2; }
+      else { dh = photoBoxSize / ir; dy = photoBoxY - (dh - photoBoxSize) / 2; }
+      ctx.drawImage(img, dx, dy, dw, dh);
+    } else {
+      ctx.fillStyle = tpl.accent + '30';
+      ctx.fillRect(photoX, photoBoxY, photoBoxSize, photoBoxSize);
+      ctx.fillStyle = tpl.text;
+      ctx.font = `${Math.round(90 * scale)}px sans-serif`;
+      ctx.fillText('🐔', W / 2, photoBoxY + photoBoxSize / 2 + 30 * scale);
+    }
+    ctx.restore();
+
+    let y = photoBoxY + photoBoxSize + 50 * scale;
+    ctx.fillStyle = tpl.text;
+    ctx.font = `bold ${Math.round(28 * scale)}px Tajawal, sans-serif`;
+    ctx.fillText(data.title || '', W / 2, y);
+
+    y += 55 * scale;
+    const badgeW = 220 * scale, badgeH = 66 * scale;
+    roundRectPath(ctx, W / 2 - badgeW / 2, y - badgeH / 2 - 12 * scale, badgeW, badgeH, badgeH / 2);
+    ctx.fillStyle = tpl.badgeBg;
+    ctx.fill();
+    ctx.fillStyle = tpl.badgeText;
+    ctx.font = `bold ${Math.round(32 * scale)}px Tajawal, sans-serif`;
+    ctx.fillText((data.price || '-') + ' دج', W / 2, y + 16 * scale);
+
+    y += 90 * scale;
+    ctx.fillStyle = tpl.text;
+    ctx.font = `${Math.round(20 * scale)}px Tajawal, sans-serif`;
+    ctx.fillText(`الوزن: ${data.weight || '-'} كغ  |  الكمية: ${data.quantity || '-'}`, W / 2, y);
+
+    y += 38 * scale;
+    ctx.font = `${Math.round(18 * scale)}px Tajawal, sans-serif`;
+    ctx.fillText(`📍 ${data.location || ''}`, W / 2, y);
+  }
+
+  function openAdDesignModal(item, imageUrl, onDone) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:var(--card);color:var(--ink);border-radius:16px;padding:16px;max-width:360px;width:100%;max-height:90vh;overflow-y:auto;';
+    box.innerHTML = `<h3 style="margin:0 0 12px;text-align:center;">اختر قالب التصميم</h3>
+      <div id="adTemplateChoices" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;"></div>
+      <div id="adFullPreviewWrap" style="display:none;text-align:center;">
+        <canvas id="adFullPreview" width="600" height="800" style="width:100%;max-width:280px;border-radius:10px;"></canvas>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;">
+          <button type="button" id="adSaveBtn" class="reveal-btn">💾 حفظ على الإعلان</button>
+          <button type="button" id="adDownloadBtn" class="reveal-btn" style="background:#555;">⬇️ تنزيل</button>
+        </div>
+      </div>
+      <button type="button" id="adCloseBtn" class="reveal-btn" style="background:#888;width:100%;margin-top:12px;">إغلاق</button>`;
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+    const choicesWrap = box.querySelector('#adTemplateChoices');
+    const data = {
+      title: listingTitle(item),
+      price: item.price,
+      weight: item.weight_kg,
+      quantity: item.quantity,
+      location: (item.wilaya || '') + (item.commune ? (' - ' + item.commune) : ''),
+    };
+
+    AD_DESIGN_TEMPLATES.forEach(tpl => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'text-align:center;cursor:pointer;';
+      const c = document.createElement('canvas');
+      c.width = 90; c.height = 120;
+      c.style.cssText = 'border-radius:8px;border:2px solid var(--border);display:block;';
+      wrap.appendChild(c);
+      const label = document.createElement('div');
+      label.textContent = tpl.name;
+      label.style.cssText = 'font-size:12px;margin-top:4px;';
+      wrap.appendChild(label);
+      drawAdDesignOnCanvas(c, tpl.id, data, imageUrl);
+      wrap.addEventListener('click', async () => {
+        const fullWrap = box.querySelector('#adFullPreviewWrap');
+        fullWrap.style.display = 'block';
+        const fullCanvas = box.querySelector('#adFullPreview');
+        await drawAdDesignOnCanvas(fullCanvas, tpl.id, data, imageUrl);
+        fullCanvas.dataset.templateId = tpl.id;
+      });
+      choicesWrap.appendChild(wrap);
+    });
+
+    box.querySelector('#adCloseBtn').addEventListener('click', () => overlay.remove());
+
+    box.querySelector('#adDownloadBtn').addEventListener('click', () => {
+      const fullCanvas = box.querySelector('#adFullPreview');
+      const link = document.createElement('a');
+      link.download = 'تصميم-الإعلان.png';
+      link.href = fullCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    box.querySelector('#adSaveBtn').addEventListener('click', async () => {
+      const saveBtn = box.querySelector('#adSaveBtn');
+      const fullCanvas = box.querySelector('#adFullPreview');
+      if (!fullCanvas.dataset.templateId) { alert('اختر قالبًا أولاً'); return; }
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'جارٍ الحفظ...';
+      try {
+        const blob = await new Promise(resolve => fullCanvas.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('تعذر إنشاء الصورة');
+        const file = new File([blob], 'design_' + Date.now() + '.png', { type: 'image/png' });
+        const url = await uploadPostMedia(file, 'ad-designs');
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        const { error: updErr } = await supabase.from('listings').update({ ad_design_url: url }).eq('id', item.id).eq('owner_id', currentUser.id);
+        if (updErr) throw updErr;
+        item.ad_design_url = url;
+        if (typeof onDone === 'function') onDone(url);
+        log('تم حفظ تصميم الإعلان بنجاح');
+        overlay.remove();
+      } catch (e) {
+        log('فشل حفظ تصميم الإعلان: ' + e.message, true);
+        alert('تعذر حفظ التصميم: ' + e.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 حفظ على الإعلان';
+      }
+    });
+  }
+
   async function loadMyListings() {
     const el = document.getElementById('myListingsList');
     el.innerHTML = '<div class="empty-state">جارٍ التحميل...</div>';
@@ -8012,35 +8208,11 @@ button.submit{padding:14px;}
         designPreview.addEventListener('click', () => openImageLightbox(designPreview.src));
         div.appendChild(designPreview);
 
-        designBtn.addEventListener('click', async () => {
-          designBtn.disabled = true;
-          const oldText = designBtn.textContent;
-          designBtn.textContent = 'جارٍ إنشاء التصميم...';
-          try {
-            const { data: adData, error: adErr } = await supabase.functions.invoke('generate-ad-design', {
-              body: {
-                listing_id: item.id,
-                image_url: imagesForItem.length ? imagesForItem[0].url : '',
-                weight: item.weight_kg || '',
-                quantity: item.quantity || '',
-                location: (item.wilaya || '') + (item.commune ? (' - ' + item.commune) : ''),
-                price: item.price || '',
-                title: listingTitle(item),
-              },
-            });
-            if (adErr) throw adErr;
-            if (adData && adData.error) throw new Error(adData.error);
-            item.ad_design_url = adData.url;
-            designPreview.src = adData.url;
+        designBtn.addEventListener('click', () => {
+          openAdDesignModal(item, imagesForItem.length ? imagesForItem[0].url : '', (url) => {
+            designPreview.src = url;
             designPreview.style.display = 'block';
-            log('تم إنشاء تصميم الإعلان بنجاح');
-          } catch (e) {
-            log('فشل إنشاء تصميم الإعلان: ' + e.message, true);
-            alert('تعذر إنشاء التصميم: ' + e.message);
-          } finally {
-            designBtn.disabled = false;
-            designBtn.textContent = oldText;
-          }
+          });
         });
 
         // ----- لوحة التعديل (تُبنى مرة واحدة، وتُظهر/تُخفى) -----
