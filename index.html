@@ -410,7 +410,7 @@
   .section-title{
     font-family:'Cairo',sans-serif;
     font-weight:800;
-    font-size:calc(15px * var(--fs-scale));
+    font-size:calc(19px * var(--fs-scale));
     color:var(--barn-green);
     margin:26px 0 12px;
   }
@@ -460,17 +460,17 @@
     margin-bottom:12px;
     background:#FDFBF7;
   }
-  /* توحيد حجم الصورة والفيديو داخل المنشور (بنفس عرض النص، دون الخروج من حدود البطاقة) */
+  /* توحيد حجم الصورة والفيديو داخل المنشور: تملأ عرض البطاقة كاملاً بدون أي قص، وارتفاعها يتبع أبعادها الحقيقية */
   .post-media-img,.post-media-video{
     display:block;
     width:100%;
     max-width:100%;
-    aspect-ratio:4/3;
-    max-height:60vh;
+    height:auto;
+    max-height:80vh;
     border-radius:10px;
     margin-top:10px;
     margin-bottom:10px;
-    object-fit:cover;
+    object-fit:contain;
     background:#000;
   }
   .post-media-img{cursor:pointer;}
@@ -830,6 +830,9 @@
     font-size:calc(15px * var(--fs-scale));
   }
   .listing-item .meta{font-size:calc(14px * var(--fs-scale));font-weight:500;color:#5a5142;margin-bottom:4px;}
+  /* تاريخ ووقت واضح للمنشورات والإعلانات */
+  .post-date-clear{font-size:calc(14px * var(--fs-scale));font-weight:700;color:#3d3628;}
+  .listing-date-clear{font-size:calc(14px * var(--fs-scale));font-weight:700;color:#3d3628;}
   .listing-item .desc{font-size:calc(15px * var(--fs-scale));font-weight:500;line-height:1.6;color:var(--ink);margin-bottom:8px;}
   .reveal-btn{
     font-family:'Cairo',sans-serif;
@@ -985,7 +988,7 @@
   .app-header-title{
     font-family:'Cairo',sans-serif;
     font-weight:800;
-    font-size:calc(17px * var(--fs-scale));
+    font-size:calc(20px * var(--fs-scale));
     color:var(--barn-green);
     text-align:center;
     flex:1;
@@ -1130,7 +1133,7 @@
     margin:0 18px 10px;
   }
   .home-section-head h2{
-    font-family:'Cairo',sans-serif;font-weight:800;font-size:calc(15px * var(--fs-scale));color:var(--ink);margin:0;
+    font-family:'Cairo',sans-serif;font-weight:800;font-size:calc(19px * var(--fs-scale));color:var(--ink);margin:0;
   }
   .home-section-head .hs-more{font-size:calc(12px * var(--fs-scale));color:var(--amber-dark);font-weight:700;cursor:pointer;}
   .home-featured{
@@ -1486,7 +1489,7 @@ button.submit,.home-cta{border-radius:13px;background:linear-gradient(135deg,var
 button.submit{padding:14px;}
 .app-header{position:sticky;top:8px;z-index:100;background:rgba(244,247,245,.92);backdrop-filter:blur(10px);padding:7px;border-radius:16px;margin-bottom:12px;}
 .icon-btn{width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #dce6df;box-shadow:0 3px 10px rgba(21,42,32,.08);}
-.app-header-title{font-size:17px;color:#123f2d;}
+.app-header-title{font-size:20px;color:#123f2d;}
 #appSubTabs{width:82%;max-width:320px;border-radius:24px 0 0 24px;padding:18px 14px;box-shadow:-12px 0 35px rgba(0,0,0,.18);}
 #appSubTabs .apptab{border-radius:13px;padding:12px 13px;color:#53645b;}
 #appSubTabs .apptab.active,#appSubTabs .apptab:hover{background:#EAF3EC;color:var(--barn-green);}
@@ -1555,7 +1558,7 @@ button.submit{padding:14px;}
       <div class="sub" style="margin-bottom:16px;">حدد عنوانًا وفئة للبث قبل البدء.</div>
       <div class="field">
         <label for="liveTitle">عنوان البث</label>
-        <input type="text" id="liveTitle" placeholder="مثال: بيع دجاج لحم دفعة جديدة">
+        <input type="text" id="liveTitle">
       </div>
       <div class="field">
         <label for="liveCategory">الفئة</label>
@@ -1795,7 +1798,7 @@ button.submit{padding:14px;}
       </div>
 
       <div class="home-banner">
-        <div class="hb-title">منصة الدجاج الأولى<br>في <span>الجزائر</span></div>
+        <div class="hb-title">منصة الدجاج الأولى<br>في <span id="hbCountryName">الجزائر</span></div>
         <div class="hb-sub">تواصل - بيع - اشترِ بأمان</div>
         <button type="button" class="hb-btn" id="homeCtaBtn">
           <span id="homeCtaLabel">+ نشر إعلان</span>
@@ -1931,17 +1934,17 @@ button.submit{padding:14px;}
         <div class="row2">
           <div class="field">
             <label for="quantity" id="quantityLabel">الكمية (عدد الدجاجات)</label>
-            <input type="number" id="quantity" min="1" placeholder="مثال: 200">
+            <input type="number" id="quantity" min="1">
           </div>
           <div class="field">
             <label for="weight" id="weightLabel">الوزن التقريبي (كغ)</label>
-            <input type="number" id="weight" min="0" step="0.1" placeholder="مثال: 2.2">
+            <input type="number" id="weight" min="0" step="0.1">
           </div>
         </div>
 
         <div class="field">
           <label for="price" id="priceLabel">السعر (دج لكل كغ)</label>
-          <input type="number" id="price" min="0" step="1" placeholder="مثال: 350">
+          <input type="number" id="price" min="0" step="1">
           <div class="price-suffix">السعر يُتفق عليه بينك وبين المشتري، هذا سعر أولي معروض.</div>
         </div>
       </div>
@@ -1949,13 +1952,13 @@ button.submit{padding:14px;}
       <div id="genericFields" style="display:none;">
         <div class="field">
           <label for="itemName" id="itemNameLabel">اسم المنتج</label>
-          <input type="text" id="itemName" placeholder="مثال: ...">
+          <input type="text" id="itemName">
         </div>
 
         <div class="row2">
           <div class="field">
             <label for="genQuantity" id="genQuantityLabel">الكمية</label>
-            <input type="number" id="genQuantity" min="1" placeholder="مثال: 50">
+            <input type="number" id="genQuantity" min="1">
           </div>
           <div class="field">
             <label for="genUnit">الوحدة</label>
@@ -1971,7 +1974,7 @@ button.submit{padding:14px;}
 
         <div class="field">
           <label for="genPrice" id="genPriceLabel">السعر (دج للوحدة)</label>
-          <input type="number" id="genPrice" min="0" step="1" placeholder="مثال: 2450">
+          <input type="number" id="genPrice" min="0" step="1">
           <div class="price-suffix">السعر يُتفق عليه بينك وبين المشتري، هذا سعر أولي معروض.</div>
         </div>
       </div>
@@ -1979,11 +1982,11 @@ button.submit{padding:14px;}
       <div class="row2">
         <div class="field">
           <label for="listWilaya">الولاية</label>
-          <input type="text" id="listWilaya" placeholder="مثال: عين الدفلى">
+          <input type="text" id="listWilaya">
         </div>
         <div class="field">
           <label for="listCommune">البلدية</label>
-          <input type="text" id="listCommune" placeholder="مثال: العطاف">
+          <input type="text" id="listCommune">
         </div>
       </div>
 
@@ -2047,11 +2050,11 @@ button.submit{padding:14px;}
       <div class="row2" style="margin-bottom:6px;">
         <div class="field">
           <label for="filterWilaya">تصفية حسب الولاية</label>
-          <input type="text" id="filterWilaya" placeholder="مثال: عين الدفلى">
+          <input type="text" id="filterWilaya">
         </div>
         <div class="field">
           <label for="filterCommune">تصفية حسب البلدية</label>
-          <input type="text" id="filterCommune" placeholder="مثال: العطاف">
+          <input type="text" id="filterCommune">
         </div>
       </div>
       <button type="button" class="submit" id="searchBtn" style="margin-bottom:18px;">بحث</button>
@@ -2789,14 +2792,14 @@ button.submit{padding:14px;}
       } else {
         postsHtml += userPosts.map(p => {
           const content = escapeHtml(p.content || '').replace(/\n/g, '<br>');
-          const created = p.created_at ? new Date(p.created_at).toLocaleString('ar-DZ') : '';
+          const created = p.created_at ? formatDateTime24(p.created_at) : '';
           return `
             <div class="listing-item">
               ${postContentHtml(p, content)}
               ${p.image_url ? '<img src="' + p.image_url + '" class="post-media-img" loading="lazy" onclick="openImageLightbox(this.src)">' : ''}
               ${p.video_url ? '<video src="' + p.video_url + '" class="post-media-video" controls playsinline preload="none" loading="lazy"></video>' : ''}
               ${p.phone ? '<div class="phone-shown" style="margin-bottom:6px;">' + escapeHtml(p.phone) + '</div>' : ''}
-              <div class="meta" style="font-size:calc(12px * var(--fs-scale));">${created}</div>
+              <div class="meta post-date-clear">${created}</div>
             </div>
           `;
         }).join('');
@@ -2998,7 +3001,7 @@ button.submit{padding:14px;}
     { code:'TH', name:'تايلاند', flag:'🇹🇭', dial:'+66', currency:'฿', locale:'en-TH', lang:'en' },
     { code:'TL', name:'تيمور الشرقية', flag:'🇹🇱', dial:'+670', currency:'$', locale:'pt-TL', lang:'pt' },
     { code:'TM', name:'تركمانستان', flag:'🇹🇲', dial:'+993', currency:'m', locale:'ru-TM', lang:'ru' },
-    { code:'UZ', name:'أوزبكستان', flag:'🇺🇿', dial:'+998', currency:'so'm', locale:'ru-UZ', lang:'ru' },
+    { code:'UZ', name:'أوزبكستان', flag:'🇺🇿', dial:'+998', currency:"so'm", locale:'ru-UZ', lang:'ru' },
     { code:'VN', name:'فيتنام', flag:'🇻🇳', dial:'+84', currency:'₫', locale:'fr-VN', lang:'fr' },
     { code:'FJ', name:'فيجي', flag:'🇫🇯', dial:'+679', currency:'FJ$', locale:'en-FJ', lang:'en' },
     { code:'KI', name:'كيريباتي', flag:'🇰🇮', dial:'+686', currency:'$', locale:'en-KI', lang:'en' },
@@ -3027,6 +3030,11 @@ button.submit{padding:14px;}
   ];
   function getCountry(code) {
     return COUNTRIES.find(c => c.code === code) || COUNTRIES.find(c => c.code === DEFAULT_COUNTRY);
+  }
+  // يحدّث اسم الدولة في بانر الصفحة الرئيسية (زر نشر إعلان) حسب دولة المستخدم الحالية
+  function updateHomeBanner(code) {
+    const el = document.getElementById('hbCountryName');
+    if (el) el.textContent = getCountry(code || selectedCountry).name;
   }
   function currencyFor(code) {
     return getCountry(code).currency;
@@ -3815,6 +3823,97 @@ button.submit{padding:14px;}
     el.className = 'msg ' + type;
   }
 
+  // رسائل خطأ المصادقة بكل اللغات المدعومة في التطبيق
+  const AUTH_ERROR_MESSAGES = {
+    invalid_credentials: {
+      ar:'البريد الإلكتروني أو كلمة المرور غير صحيحة.', fr:"L'e-mail ou le mot de passe est incorrect.",
+      en:'The email or password is incorrect.', es:'El correo electrónico o la contraseña son incorrectos.',
+      de:'E-Mail oder Passwort ist falsch.', tr:'E-posta veya şifre yanlış.',
+      it:"L'e-mail o la password non sono corretti.", pt:'O e-mail ou a senha estão incorretos.',
+      nl:'E-mail of wachtwoord is onjuist.', ru:'Неверный адрес электронной почты или пароль.'
+    },
+    email_not_confirmed: {
+      ar:'يجب تأكيد البريد الإلكتروني أولاً قبل تسجيل الدخول.', fr:"Vous devez d'abord confirmer votre e-mail avant de vous connecter.",
+      en:'You must confirm your email before logging in.', es:'Debes confirmar tu correo electrónico antes de iniciar sesión.',
+      de:'Sie müssen Ihre E-Mail-Adresse bestätigen, bevor Sie sich anmelden.', tr:'Giriş yapmadan önce e-postanızı onaylamanız gerekir.',
+      it:'Devi confermare la tua e-mail prima di accedere.', pt:'Você deve confirmar seu e-mail antes de fazer login.',
+      nl:'U moet uw e-mail bevestigen voordat u kunt inloggen.', ru:'Перед входом необходимо подтвердить адрес электронной почты.'
+    },
+    already_registered: {
+      ar:'هذا البريد الإلكتروني مسجّل مسبقًا. جرّب تسجيل الدخول بدلاً من إنشاء حساب جديد.', fr:"Cet e-mail est déjà enregistré. Essayez de vous connecter au lieu de créer un nouveau compte.",
+      en:'This email is already registered. Try logging in instead of creating a new account.', es:'Este correo electrónico ya está registrado. Intenta iniciar sesión en lugar de crear una cuenta nueva.',
+      de:'Diese E-Mail-Adresse ist bereits registriert. Versuchen Sie sich anzumelden, anstatt ein neues Konto zu erstellen.', tr:'Bu e-posta zaten kayıtlı. Yeni bir hesap oluşturmak yerine giriş yapmayı deneyin.',
+      it:'Questa e-mail è già registrata. Prova ad accedere invece di creare un nuovo account.', pt:'Este e-mail já está registrado. Tente fazer login em vez de criar uma nova conta.',
+      nl:'Dit e-mailadres is al geregistreerd. Probeer in te loggen in plaats van een nieuw account aan te maken.', ru:'Этот адрес электронной почты уже зарегистрирован. Попробуйте войти вместо создания новой учетной записи.'
+    },
+    weak_password: {
+      ar:'كلمة المرور قصيرة جدًا، يجب أن تكون 6 أحرف على الأقل.', fr:'Le mot de passe est trop court, il doit contenir au moins 6 caractères.',
+      en:'The password is too short, it must be at least 6 characters.', es:'La contraseña es demasiado corta, debe tener al menos 6 caracteres.',
+      de:'Das Passwort ist zu kurz, es muss mindestens 6 Zeichen lang sein.', tr:'Şifre çok kısa, en az 6 karakter olmalıdır.',
+      it:'La password è troppo corta, deve contenere almeno 6 caratteri.', pt:'A senha é muito curta, deve ter pelo menos 6 caracteres.',
+      nl:'Het wachtwoord is te kort, het moet minstens 6 tekens bevatten.', ru:'Пароль слишком короткий, он должен содержать не менее 6 символов.'
+    },
+    invalid_email: {
+      ar:'صيغة البريد الإلكتروني غير صحيحة.', fr:"Le format de l'e-mail est incorrect.",
+      en:'The email format is invalid.', es:'El formato del correo electrónico no es válido.',
+      de:'Das E-Mail-Format ist ungültig.', tr:'E-posta biçimi geçersiz.',
+      it:"Il formato dell'e-mail non è valido.", pt:'O formato do e-mail é inválido.',
+      nl:'De e-mailindeling is ongeldig.', ru:'Неверный формат электронной почты.'
+    },
+    rate_limit: {
+      ar:'محاولات كثيرة جدًا، حاول مرة أخرى بعد قليل.', fr:'Trop de tentatives, réessayez dans un instant.',
+      en:'Too many attempts, please try again shortly.', es:'Demasiados intentos, inténtalo de nuevo en un momento.',
+      de:'Zu viele Versuche, bitte versuchen Sie es in Kürze erneut.', tr:'Çok fazla deneme yapıldı, lütfen kısa süre sonra tekrar deneyin.',
+      it:'Troppi tentativi, riprova tra poco.', pt:'Muitas tentativas, tente novamente em breve.',
+      nl:'Te veel pogingen, probeer het straks opnieuw.', ru:'Слишком много попыток, повторите попытку позже.'
+    },
+    network_error: {
+      ar:'تحقق من اتصالك بالإنترنت وحاول مرة أخرى.', fr:'Vérifiez votre connexion Internet et réessayez.',
+      en:'Check your internet connection and try again.', es:'Comprueba tu conexión a Internet e inténtalo de nuevo.',
+      de:'Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.', tr:'İnternet bağlantınızı kontrol edin ve tekrar deneyin.',
+      it:'Controlla la tua connessione Internet e riprova.', pt:'Verifique sua conexão com a internet e tente novamente.',
+      nl:'Controleer uw internetverbinding en probeer het opnieuw.', ru:'Проверьте подключение к интернету и повторите попытку.'
+    },
+    generic_error: {
+      ar:'حدث خطأ. تحقق من البيانات المدخلة وحاول مرة أخرى.', fr:"Une erreur s'est produite. Vérifiez les informations saisies et réessayez.",
+      en:'An error occurred. Check the information entered and try again.', es:'Ocurrió un error. Verifica los datos introducidos e inténtalo de nuevo.',
+      de:'Ein Fehler ist aufgetreten. Überprüfen Sie die eingegebenen Daten und versuchen Sie es erneut.', tr:'Bir hata oluştu. Girilen bilgileri kontrol edin ve tekrar deneyin.',
+      it:'Si è verificato un errore. Controlla i dati inseriti e riprova.', pt:'Ocorreu um erro. Verifique os dados inseridos e tente novamente.',
+      nl:'Er is een fout opgetreden. Controleer de ingevoerde gegevens en probeer het opnieuw.', ru:'Произошла ошибка. Проверьте введенные данные и повторите попытку.'
+    }
+  };
+  function authErrorText(key) {
+    const entry = AUTH_ERROR_MESSAGES[key] || AUTH_ERROR_MESSAGES.generic_error;
+    return entry[currentLang] || entry.ar;
+  }
+  // ترجمة رسائل خطأ المصادقة (Supabase) إلى رسالة واضحة بلغة المستخدم الحالية
+  function translateAuthError(msg) {
+    if (!msg) return authErrorText('generic_error');
+    const m = String(msg).toLowerCase();
+    if (m.includes('invalid login credentials') || m.includes('invalid_credentials')) {
+      return authErrorText('invalid_credentials');
+    }
+    if (m.includes('email not confirmed')) {
+      return authErrorText('email_not_confirmed');
+    }
+    if (m.includes('already registered') || m.includes('already exists') || m.includes('user already')) {
+      return authErrorText('already_registered');
+    }
+    if (m.includes('password') && (m.includes('at least') || m.includes('character') || m.includes('short'))) {
+      return authErrorText('weak_password');
+    }
+    if (m.includes('unable to validate email') || m.includes('invalid email') || (m.includes('email') && m.includes('invalid'))) {
+      return authErrorText('invalid_email');
+    }
+    if (m.includes('rate limit') || m.includes('too many requests')) {
+      return authErrorText('rate_limit');
+    }
+    if (m.includes('network') || m.includes('fetch failed') || m.includes('failed to fetch')) {
+      return authErrorText('network_error');
+    }
+    return authErrorText('generic_error');
+  }
+
   let currentProfile = null;
   let activityHeartbeatInterval = null;
 
@@ -3890,6 +3989,7 @@ button.submit{padding:14px;}
     log('تم تحميل الملف الشخصي: ' + profile.user_type + (profile.is_admin ? ' (مشرف)' : '') + ' | حالة الحساب: ' + (profile.is_approved === null ? 'قيد المراجعة' : (profile.is_approved ? 'مقبول' : 'مرفوض')));
     startActivityHeartbeat();
     initCountryFilter(profile.country_code);
+    updateHomeBanner(profile.country_code);
 
     // تعبئة البريد الإلكتروني تلقائيًا في profiles إن كان ناقصًا (حسابات قديمة أو فشل الحفظ عند التسجيل)
     if (!profile.email && user.email) {
@@ -4101,28 +4201,38 @@ button.submit{padding:14px;}
     const unit = item.unit || ((item.category === 'chicken' || item.category === 'turkey' || !item.category) ? 'كغ' : 'وحدة');
     return item.price + ' ' + currencyFor(item.country_code) + ' / ' + unit;
   }
+  // تنسيق موحّد لتاريخ ووقت النشر بصيغة 24 ساعة، يتبع لغة المستخدم المختارة في التطبيق (فرنسية/إنجليزية/عربية...)
+  function formatDateTime24(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    const localeMap = {
+      ar: 'fr-FR', fr: 'fr-FR', en: 'en-GB', es: 'es-ES', de: 'de-DE',
+      tr: 'tr-TR', it: 'it-IT', pt: 'pt-PT', nl: 'nl-NL', ru: 'ru-RU'
+    };
+    const locale = localeMap[currentLang] || 'fr-FR';
+    try {
+      const datePart = d.toLocaleDateString(locale);
+      const timePart = d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false });
+      return datePart + ' - ' + timePart;
+    } catch (e) {
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return day + '/' + month + '/' + year + ' - ' + hours + ':' + minutes;
+    }
+  }
   function listingDateLabel(item) {
     if (!item.created_at) return '';
-    const d = new Date(item.created_at);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return 'نُشر بتاريخ ' + day + '/' + month + '/' + year + ' - ' + hours + ':' + minutes;
+    return 'نُشر بتاريخ ' + formatDateTime24(item.created_at);
   }
 
   // ----- جميع المنشورات في الرئيسية -----
   let homePostsCache = { posts: [], nameMap: {}, avatarMap: {}, wilayaMap: {}, communeMap: {} };
 
   function formatPostTime(ts) {
-    if (!ts) return '';
-    const d = new Date(ts);
-    const diff = Date.now() - d.getTime();
-    if (diff >= 0 && diff < 60000) return 'الآن';
-    if (diff >= 0 && diff < 3600000) return 'منذ ' + Math.max(1, Math.floor(diff / 60000)) + ' دقيقة';
-    if (diff >= 0 && diff < 86400000) return 'منذ ' + Math.max(1, Math.floor(diff / 3600000)) + ' ساعة';
-    return d.toLocaleString('ar-DZ');
+    return formatDateTime24(ts);
   }
 
   async function renderHomePosts() {
@@ -4169,7 +4279,7 @@ button.submit{padding:14px;}
         ? '<div class="meta">📏 يبعد عنك ' + haversineDistanceKm(userGeo.lat, userGeo.lng, post.latitude, post.longitude).toFixed(1) + ' كم تقريبًا</div>'
         : '';
       div.innerHTML = `
-        <div class="owner-row clickable" data-user-id="${escapeHtml(post.user_id || '')}">${av}<span class="owner-name">${author}</span><span class="meta" style="font-size:calc(12px * var(--fs-scale));margin-right:auto;">${formatPostTime(post.created_at)}</span></div>
+        <div class="owner-row clickable" data-user-id="${escapeHtml(post.user_id || '')}">${av}<span class="owner-name">${author}</span><span class="meta post-date-clear" style="margin-right:auto;">${formatPostTime(post.created_at)}</span></div>
         ${loc ? '<div class="meta" style="margin:5px 0 10px;">📍 ' + loc + '</div>' : ''}
         ${distanceHtml}
         ${postContentHtml(post, content)}
@@ -4421,7 +4531,7 @@ button.submit{padding:14px;}
         <div class="meta">${(!item.category || item.category === 'chicken' || item.category === 'turkey') ? 'الكمية: ' + (item.quantity || '-') + ' | الوزن التقريبي: ' + (item.weight_kg || '-') + ' كغ' : 'الكمية: ' + (item.quantity || '-') + ' ' + (item.unit || '')}</div>
         <div class="meta">${item.wilaya || ''} - ${item.commune || ''}</div>
         ${(userGeo && item.latitude != null && item.longitude != null) ? '<div class="meta">📏 يبعد عنك ' + haversineDistanceKm(userGeo.lat, userGeo.lng, item.latitude, item.longitude).toFixed(1) + ' كم تقريبًا</div>' : ''}
-        <div class="meta" style="color:#8a8070;">${listingDateLabel(item)}</div>
+        <div class="meta listing-date-clear">${listingDateLabel(item)}</div>
         <div class="meta">${ratingHtml}</div>
         ${(imagesMap[item.id] && imagesMap[item.id].length) ? '<div class="listing-card-images">' + imagesMap[item.id].map(url => '<img src="' + url + '" loading="lazy" onclick="openImageLightbox(this.src)">').join('') + '</div>' : ''}
         ${item.description ? ((item.bg_style && !(imagesMap[item.id] && imagesMap[item.id].length)) ? '<div class="post-bg-box no-translate ' + escapeHtml(item.bg_style) + '">' + item.description + '</div>' : '<div class="desc no-translate">' + item.description + '</div>') : ''}
@@ -7689,7 +7799,7 @@ button.submit{padding:14px;}
           ? '<img src="' + authorAvatar + '" class="mini-avatar" alt="" onerror="this.outerHTML=\'<span class=&quot;mini-avatar mini-avatar-fallback&quot;>👤</span>\';">'
           : '<span class="mini-avatar mini-avatar-fallback">👤</span>';
         const content = escapeHtml(post.content || '').replace(/\n/g, '<br>');
-        const created = post.created_at ? new Date(post.created_at).toLocaleString('ar-DZ') : '';
+        const created = post.created_at ? formatDateTime24(post.created_at) : '';
         const distanceHtml = (userGeo && post.latitude != null && post.longitude != null)
           ? '<div class="meta">📏 يبعد عنك ' + haversineDistanceKm(userGeo.lat, userGeo.lng, post.latitude, post.longitude).toFixed(1) + ' كم تقريبًا</div>'
           : '';
@@ -7698,7 +7808,7 @@ button.submit{padding:14px;}
           <div class="owner-row clickable" data-user-id="${escapeHtml(post.user_id || '')}">
             ${authorAvatarHtml}
             <span class="owner-name">${author}</span>
-            <span class="meta" style="font-size:calc(12px * var(--fs-scale));margin-right:auto;">${created}</span>
+            <span class="meta post-date-clear" style="margin-right:auto;">${created}</span>
           </div>
           ${distanceHtml}
           ${postContentHtml(post, content)}
@@ -8172,7 +8282,7 @@ button.submit{padding:14px;}
           </div>
           <div class="meta">${isChickenCat ? 'الكمية: ' + (item.quantity || '-') + ' | الوزن التقريبي: ' + (item.weight_kg || '-') + ' كغ' : 'الكمية: ' + (item.quantity || '-') + ' ' + (item.unit || '')}</div>
           <div class="meta">${item.wilaya || ''} - ${item.commune || ''}</div>
-          <div class="meta" style="color:#8a8070;">${listingDateLabel(item)}</div>
+          <div class="meta listing-date-clear">${listingDateLabel(item)}</div>
           ${item.ai_flagged && item.ai_moderation_reason ? '<div class="meta" style="color:#B3261E;">🤖 ' + escapeHtml(item.ai_moderation_reason) + '</div>' : ''}
           ${(imagesForItem.length) ? '<div class="listing-card-images">' + imagesForItem.map(img => '<img src="' + img.url + '" loading="lazy" onclick="openImageLightbox(this.src)">').join('') + '</div>' : ''}
         `;
@@ -8422,14 +8532,14 @@ button.submit{padding:14px;}
         const statusClass = post.status === 'approved' ? 'active' : (post.status === 'rejected' ? 'rejected' : 'pending');
         const statusLabel = post.status === 'approved' ? 'منشور' : (post.status === 'rejected' ? 'مرفوض' : 'قيد المراجعة');
         const content = escapeHtml(post.content || '').replace(/\n/g, '<br>');
-        const created = post.created_at ? new Date(post.created_at).toLocaleString('ar-DZ') : '';
+        const created = post.created_at ? formatDateTime24(post.created_at) : '';
         const div = document.createElement('div');
         div.className = 'listing-item';
         div.dataset.myPostId = post.id;
         div.innerHTML = `
           <div class="top-row">
             <span class="badge-status ${statusClass}">${statusLabel}</span>${post.ai_flagged ? ' <span class="badge-status rejected" title="' + escapeHtml(post.moderation_reason || '') + '">🤖 ملاحظة ذكاء اصطناعي</span>' : ''}
-            <span class="meta" style="font-size:calc(12px * var(--fs-scale));">${created}</span>
+            <span class="meta post-date-clear">${created}</span>
           </div>
           ${postContentHtml(post, content, 'my-post-view-content')}
           ${post.ai_flagged && post.moderation_reason ? '<div class="meta" style="color:#B3261E;">🤖 ' + escapeHtml(post.moderation_reason) + '</div>' : ''}
@@ -8702,7 +8812,7 @@ button.submit{padding:14px;}
 
       if (error) {
         log('فشل الدخول: ' + error.message, true);
-        showMsg(msgEl, "فشل الدخول: تحقق من البريد الإلكتروني/رقم الهاتف وكلمة المرور.", 'err');
+        showMsg(msgEl, translateAuthError(error.message), 'err');
         return;
       }
 
@@ -8713,7 +8823,7 @@ button.submit{padding:14px;}
       btn.disabled = false;
       btn.textContent = "دخول";
       log('خطأ غير متوقع: ' + err.message, true);
-      showMsg(msgEl, "حدث خطأ غير متوقع: " + err.message, 'err');
+      showMsg(msgEl, translateAuthError(err.message), 'err');
     }
   });
 
@@ -8771,7 +8881,7 @@ button.submit{padding:14px;}
 
       if (authError) {
         log('فشل إنشاء حساب الدخول: ' + authError.message, true);
-        showMsg(msgEl, "حدث خطأ أثناء إنشاء الحساب: " + authError.message, 'err');
+        showMsg(msgEl, translateAuthError(authError.message), 'err');
         btn.disabled = false;
         btn.textContent = "إنشاء الحساب";
         return;
@@ -8794,7 +8904,7 @@ button.submit{padding:14px;}
       btn.disabled = false;
       btn.textContent = "إنشاء الحساب";
       log('خطأ غير متوقع: ' + err.message, true);
-      showMsg(msgEl, "حدث خطأ غير متوقع: " + err.message, 'err');
+      showMsg(msgEl, translateAuthError(err.message), 'err');
     }
   });
   // ===== المساعد الذكي (شات بوت مخفي - زر عائم) =====
