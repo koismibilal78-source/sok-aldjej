@@ -1992,7 +1992,11 @@ button.submit{padding:14px;}
 
       <div class="field">
         <label>الموقع الجغرافي (اختياري)</label>
-        <button type="button" class="media-pick-btn" id="listLocationBtn"><span class="icon">📍</span> تحديد موقعي</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="listShowLocation" style="width:auto;">
+          <label for="listShowLocation" style="margin:0;">إظهار موقعي التقريبي في الإعلان</label>
+        </div>
+        <button type="button" class="media-pick-btn" id="listLocationBtn" style="margin-top:8px;display:none;"><span class="icon">📍</span> تحسين دقة الموقع</button>
         <div id="listLocationStatus" class="meta" style="margin-top:6px;display:none;"></div>
         <input type="hidden" id="listLat">
         <input type="hidden" id="listLng">
@@ -2200,7 +2204,11 @@ button.submit{padding:14px;}
       </div>
       <div class="field">
         <label>الموقع الجغرافي (اختياري)</label>
-        <button type="button" class="media-pick-btn" id="postLocationBtn"><span class="icon">📍</span> تحديد موقعي</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="postShowLocation" style="width:auto;">
+          <label for="postShowLocation" style="margin:0;">إظهار موقعي التقريبي في المنشور</label>
+        </div>
+        <button type="button" class="media-pick-btn" id="postLocationBtn" style="margin-top:8px;display:none;"><span class="icon">📍</span> تحسين دقة الموقع</button>
         <div id="postLocationStatus" class="meta" style="margin-top:6px;display:none;"></div>
         <input type="hidden" id="postLat">
         <input type="hidden" id="postLng">
@@ -3990,6 +3998,9 @@ button.submit{padding:14px;}
     startActivityHeartbeat();
     initCountryFilter(profile.country_code);
     updateHomeBanner(profile.country_code);
+    // نبدأ تحديد الموقع في الخلفية فور تسجيل الدخول (دون انتظار)، بدل انتظار فتح السوق/الرئيسية،
+    // بحيث تكون النتيجة جاهزة ومخزّنة مسبقًا (currentUserGeo) عند الحاجة إليها.
+    requestUserGeoOnce();
 
     // تعبئة البريد الإلكتروني تلقائيًا في profiles إن كان ناقصًا (حسابات قديمة أو فشل الحفظ عند التسجيل)
     if (!profile.email && user.email) {
@@ -4066,6 +4077,7 @@ button.submit{padding:14px;}
           'نشر إعلانات البيع متاح فقط لحسابات "مربي الدجاج". حسابك مسجل كتاجر.';
       } else {
         document.getElementById('appFormCard').style.display = 'block';
+        autoStartListLocation();
       }
     } else if (tab === 'market') {
       document.getElementById('marketCard').style.display = 'block';
@@ -4092,6 +4104,7 @@ button.submit{padding:14px;}
       if (postComposeOnly) {
         postBrowseElements.forEach(el => el.style.display = 'none');
         if (postBrowseHr) postBrowseHr.style.display = 'none';
+        autoStartPostLocation();
       } else {
         postBrowseElements.forEach(el => {
           el.style.display = '';
@@ -4423,16 +4436,20 @@ button.submit{padding:14px;}
 
   function initCountryFilter(myCountryCode) {
     const sel = document.getElementById('filterCountry');
-    if (!sel || sel.dataset.ready) return;
-    sel.dataset.ready = '1';
-    sel.innerHTML = '<option value="">كل الدول</option>' +
-      COUNTRIES.map(c => '<option value="' + c.code + '">' + c.flag + ' ' + c.name + '</option>').join('');
+    if (!sel) return;
+    if (!sel.dataset.ready) {
+      sel.dataset.ready = '1';
+      sel.innerHTML = '<option value="">كل الدول</option>' +
+        COUNTRIES.map(c => '<option value="' + c.code + '">' + c.flag + ' ' + c.name + '</option>').join('');
+      sel.addEventListener('change', () => {
+        const wilaya = document.getElementById('filterWilaya').value.trim();
+        const commune = document.getElementById('filterCommune').value.trim();
+        loadMarket(wilaya, commune, currentMarketCategory);
+      });
+    }
+    // نعيد ضبط قيمة الدولة الحالية في كل مرة (وليس فقط أول مرة) حتى لا تبقى
+    // عالقة على دولة حساب سابق عند تبديل الحساب دون إعادة تحميل الصفحة.
     sel.value = myCountryCode || DEFAULT_COUNTRY;
-    sel.addEventListener('change', () => {
-      const wilaya = document.getElementById('filterWilaya').value.trim();
-      const commune = document.getElementById('filterCommune').value.trim();
-      loadMarket(wilaya, commune, currentMarketCategory);
-    });
   }
 
   async function loadMarket(wilaya, commune, category) {
@@ -4448,8 +4465,10 @@ button.submit{padding:14px;}
       .order('created_at', { ascending: false });
 
     const countrySel = document.getElementById('filterCountry');
-    const countryFilter = countrySel ? countrySel.value : '';
-    if (countryFilter) query = query.eq('country_code', countryFilter);
+    const countryFilter = (countrySel && countrySel.value)
+      || (currentProfile && currentProfile.country_code)
+      || DEFAULT_COUNTRY;
+    query = query.eq('country_code', countryFilter);
 
     if (wilaya) query = query.ilike('wilaya', '%' + wilaya + '%');
     if (commune) query = query.ilike('commune', '%' + commune + '%');
@@ -6668,123 +6687,131 @@ button.submit{padding:14px;}
 
   // تحديد الموقع بأفضل دقة متاحة من الجهاز:
   // نجمع عدة قراءات GPS ونحتفظ بأفضل accuracy بدل الاعتماد على أول قراءة.
-  function setupLocationPicker(btnId, statusId, latId, lngId, successNote) {
+  function runLocationRefine(btnId, statusId, latId, lngId, successNote) {
     const btn = document.getElementById(btnId);
     const status = document.getElementById(statusId);
-    if (!btn) return;
+    if (!status) return;
 
-    btn.addEventListener('click', () => {
-      if (!navigator.geolocation) {
-        status.style.display = 'block';
-        status.textContent = 'المتصفح لا يدعم تحديد الموقع.';
+    if (!navigator.geolocation) {
+      status.style.display = 'block';
+      status.textContent = 'المتصفح لا يدعم تحديد الموقع.';
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="icon">📍</span> جارٍ تحديد الموقع بدقة عالية...';
+    }
+    status.style.display = 'block';
+    status.style.color = '';
+    status.textContent = 'جارٍ البحث عن أدق إشارة GPS...';
+
+    let best = null;
+    let watchId = null;
+    let finished = false;
+    const startedAt = Date.now();
+    const MAX_WAIT = 30000;
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="icon">📍</span> تحسين دقة الموقع';
+      }
+
+      if (!best) {
+        status.style.color = '';
+        status.textContent =
+          'تعذّر الحصول على موقع GPS. تأكد من تشغيل الموقع وحاول في مكان مفتوح.';
         return;
       }
 
-      btn.disabled = true;
-      btn.innerHTML = '<span class="icon">📍</span> جارٍ تحسين الموقع...';
-      status.style.display = 'block';
-      status.style.color = '';
-      status.textContent = 'جارٍ البحث عن أدق إشارة GPS...';
+      document.getElementById(latId).value = best.latitude;
+      document.getElementById(lngId).value = best.longitude;
 
-      let best = null;
-      let watchId = null;
-      let finished = false;
-      const startedAt = Date.now();
-      const MAX_WAIT = 30000;
+      const accuracy = Number(best.accuracy);
+      const accuracyText = accuracy < 1
+        ? accuracy.toFixed(2)
+        : accuracy < 10
+          ? accuracy.toFixed(1)
+          : Math.round(accuracy);
 
-      function finish() {
-        if (finished) return;
-        finished = true;
+      status.style.color = accuracy <= 10 ? '#2E7D32' : '#b45309';
 
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-          watchId = null;
-        }
+      if (accuracy < 1) {
+        status.textContent =
+          'تم تحديد الموقع بدقة ' + accuracyText + ' متر ✓ (' + successNote + ')';
+      } else {
+        status.textContent =
+          'أفضل دقة متاحة: ~' + accuracyText + ' متر ✓ (' + successNote + ')';
+      }
+    }
 
-        btn.disabled = false;
-        btn.innerHTML = '<span class="icon">📍</span> تحديد موقعي';
+    function onPosition(pos) {
+      const a = Number(pos.coords.accuracy);
+      if (!Number.isFinite(a) || a <= 0) return;
 
-        if (!best) {
-          status.style.color = '';
-          status.textContent =
-            'تعذّر الحصول على موقع GPS. تأكد من تشغيل الموقع وحاول في مكان مفتوح.';
-          return;
-        }
+      if (!best || a < Number(best.accuracy)) {
+        best = {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: a
+        };
 
-        document.getElementById(latId).value = best.latitude;
-        document.getElementById(lngId).value = best.longitude;
+        const accuracyText = a < 1
+          ? a.toFixed(2)
+          : a < 10
+            ? a.toFixed(1)
+            : Math.round(a);
 
-        const accuracy = Number(best.accuracy);
-        const accuracyText = accuracy < 1
-          ? accuracy.toFixed(2)
-          : accuracy < 10
-            ? accuracy.toFixed(1)
-            : Math.round(accuracy);
+        status.textContent =
+          'أفضل قراءة حتى الآن: ~' + accuracyText +
+          ' متر — جارٍ البحث عن أدق...';
 
-        status.style.color = accuracy <= 10 ? '#2E7D32' : '#b45309';
-
-        if (accuracy < 1) {
-          status.textContent =
-            'تم تحديد الموقع بدقة ' + accuracyText + ' متر ✓ (' + successNote + ')';
-        } else {
-          status.textContent =
-            'أفضل دقة متاحة: ~' + accuracyText + ' متر ✓ (' + successNote + ')';
-        }
+        // إذا وصل الجهاز فعليًا لأقل من متر، نعتمد القراءة مباشرة.
+        if (a < 1) finish();
       }
 
-      function onPosition(pos) {
-        const a = Number(pos.coords.accuracy);
-        if (!Number.isFinite(a) || a <= 0) return;
+      if (Date.now() - startedAt >= MAX_WAIT) finish();
+    }
 
-        if (!best || a < Number(best.accuracy)) {
-          best = {
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            accuracy: a
-          };
-
-          const accuracyText = a < 1
-            ? a.toFixed(2)
-            : a < 10
-              ? a.toFixed(1)
-              : Math.round(a);
-
-          status.textContent =
-            'أفضل قراءة حتى الآن: ~' + accuracyText +
-            ' متر — جارٍ البحث عن أدق...';
-
-          // إذا وصل الجهاز فعليًا لأقل من متر، نعتمد القراءة مباشرة.
-          if (a < 1) finish();
-        }
-
-        if (Date.now() - startedAt >= MAX_WAIT) finish();
-      }
-
-      function onError(err) {
-        if (Date.now() - startedAt >= MAX_WAIT) {
-          finish();
-        } else {
-          status.textContent =
-            'إشارة GPS غير مستقرة — جارٍ إعادة المحاولة...';
-        }
-      }
-
-      try {
-        watchId = navigator.geolocation.watchPosition(
-          onPosition,
-          onError,
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
-        );
-
-        setTimeout(finish, MAX_WAIT);
-      } catch (e) {
+    function onError(err) {
+      if (Date.now() - startedAt >= MAX_WAIT) {
         finish();
+      } else {
+        status.textContent =
+          'إشارة GPS غير مستقرة — جارٍ إعادة المحاولة...';
       }
-    });
+    }
+
+    try {
+      watchId = navigator.geolocation.watchPosition(
+        onPosition,
+        onError,
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+
+      setTimeout(finish, MAX_WAIT);
+    } catch (e) {
+      finish();
+    }
+  }
+
+  function setupLocationPicker(btnId, statusId, latId, lngId, successNote) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.addEventListener('click', () => runLocationRefine(btnId, statusId, latId, lngId, successNote));
   }
 
   setupLocationPicker(
@@ -6795,6 +6822,47 @@ button.submit{padding:14px;}
     'postLocationBtn', 'postLocationStatus', 'postLat', 'postLng',
     'سيساعد على معرفة المسافة التقريبية فقط، دون إظهار موقعك الدقيق للعامة'
   );
+
+  // ----- تحديد الموقع تلقائيًا عند فتح نموذج نشر إعلان/منشور (قبل الضغط على نشر) -----
+  // يبدأ البحث عن أدق إشارة GPS بمجرد دخول المستخدم لنموذج النشر، دون انتظار أي إجراء منه،
+  // بحيث يكون الموقع جاهزًا فورًا لحظة الضغط على "نشر". خانة "إظهار الموقع" تتحكم فقط في
+  // إرفاقه فعليًا بالإعلان/المنشور عند الإرسال، وليس في بدء عملية التحديد نفسها.
+  let listLocationAutoStarted = false;
+  let postLocationAutoStarted = false;
+
+  function autoStartListLocation() {
+    if (listLocationAutoStarted) return;
+    listLocationAutoStarted = true;
+    runLocationRefine(
+      'listLocationBtn', 'listLocationStatus', 'listLat', 'listLng',
+      'سيساعد المشترين على معرفة المسافة التقريبية فقط، دون إظهار موقعك الدقيق للعامة'
+    );
+  }
+
+  function autoStartPostLocation() {
+    if (postLocationAutoStarted) return;
+    postLocationAutoStarted = true;
+    runLocationRefine(
+      'postLocationBtn', 'postLocationStatus', 'postLat', 'postLng',
+      'سيساعد على معرفة المسافة التقريبية فقط، دون إظهار موقعك الدقيق للعامة'
+    );
+  }
+
+  // خانة "إظهار الموقع": تُظهر/تُخفي فقط حالة الموقع المحدَّد أصلاً في الخلفية،
+  // ولا تبدأ أو توقف عملية تحديد الموقع نفسها.
+  function wireLocationToggle(checkboxId, btnId, statusId) {
+    const checkbox = document.getElementById(checkboxId);
+    const btn = document.getElementById(btnId);
+    const status = document.getElementById(statusId);
+    if (!checkbox) return;
+
+    checkbox.addEventListener('change', () => {
+      if (btn) btn.style.display = checkbox.checked ? 'inline-flex' : 'none';
+      if (status) status.style.display = checkbox.checked ? 'block' : 'none';
+    });
+  }
+  wireLocationToggle('listShowLocation', 'listLocationBtn', 'listLocationStatus');
+  wireLocationToggle('postShowLocation', 'postLocationBtn', 'postLocationStatus');
 
   // ----- حساب المسافة التقريبية بين نقطتين (كم) -----
   function haversineDistanceKm(lat1, lon1, lat2, lon2) {
@@ -6827,7 +6895,7 @@ button.submit{padding:14px;}
           currentUserGeoPromise = null;
           resolve(null);
         },
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
       );
     });
     return currentUserGeoPromise;
@@ -6928,7 +6996,8 @@ button.submit{padding:14px;}
 
     const listLatVal = document.getElementById('listLat').value;
     const listLngVal = document.getElementById('listLng').value;
-    if (listLatVal && listLngVal) {
+    const listShowLocationChecked = document.getElementById('listShowLocation') && document.getElementById('listShowLocation').checked;
+    if (listShowLocationChecked && listLatVal && listLngVal) {
       payload.latitude = parseFloat(listLatVal);
       payload.longitude = parseFloat(listLngVal);
     }
@@ -7012,6 +7081,11 @@ button.submit{padding:14px;}
       document.getElementById('listLat').value = '';
       document.getElementById('listLng').value = '';
       if (listLocationStatus) listLocationStatus.style.display = 'none';
+      const listShowLocationEl = document.getElementById('listShowLocation');
+      if (listShowLocationEl) listShowLocationEl.checked = false;
+      listLocationAutoStarted = false;
+      const listLocationBtnEl = document.getElementById('listLocationBtn');
+      if (listLocationBtnEl) listLocationBtnEl.style.display = 'none';
       listingImageFiles = [];
       renderListingImagesPreview();
       resetListingBgPicker();
@@ -7605,6 +7679,7 @@ button.submit{padding:14px;}
 
       const postLatVal = document.getElementById('postLat').value;
       const postLngVal = document.getElementById('postLng').value;
+      const postShowLocationEl2 = document.getElementById('postShowLocation');
 
       const payload = {
         user_id: user.id,
@@ -7618,7 +7693,7 @@ button.submit{padding:14px;}
         bg_style: (imageUrls.length || videoFile) ? null : (selectedPostBg || null),
         country_code: (currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY,
       };
-      if (postLatVal && postLngVal) {
+      if (postShowLocationEl2 && postShowLocationEl2.checked && postLatVal && postLngVal) {
         payload.latitude = parseFloat(postLatVal);
         payload.longitude = parseFloat(postLngVal);
       }
@@ -7673,6 +7748,11 @@ button.submit{padding:14px;}
       document.getElementById('postLng').value = '';
       const postLocationStatusEl = document.getElementById('postLocationStatus');
       if (postLocationStatusEl) postLocationStatusEl.style.display = 'none';
+      const postShowLocationEl = document.getElementById('postShowLocation');
+      if (postShowLocationEl) postShowLocationEl.checked = false;
+      postLocationAutoStarted = false;
+      const postLocationBtnEl = document.getElementById('postLocationBtn');
+      if (postLocationBtnEl) postLocationBtnEl.style.display = 'none';
       resetPostImagePicker();
       resetPostVideoPicker();
 
