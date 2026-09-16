@@ -6710,7 +6710,8 @@ button.submit{padding:14px;}
     let watchId = null;
     let finished = false;
     const startedAt = Date.now();
-    const MAX_WAIT = 30000;
+    const MAX_WAIT = 8000;
+    const GOOD_ENOUGH_ACCURACY = 20; // بالأمتار — يكفي لحساب مسافة تقريبية
 
     function finish() {
       if (finished) return;
@@ -6775,8 +6776,8 @@ button.submit{padding:14px;}
           'أفضل قراءة حتى الآن: ~' + accuracyText +
           ' متر — جارٍ البحث عن أدق...';
 
-        // إذا وصل الجهاز فعليًا لأقل من متر، نعتمد القراءة مباشرة.
-        if (a < 1) finish();
+        // إذا وصلنا لدقة مقبولة بالأمتار، نعتمد القراءة مباشرة بدل انتظار دقة تحت المتر (نادرة الحدوث).
+        if (a <= GOOD_ENOUGH_ACCURACY) finish();
       }
 
       if (Date.now() - startedAt >= MAX_WAIT) finish();
