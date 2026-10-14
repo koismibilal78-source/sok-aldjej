@@ -2665,7 +2665,7 @@ button.submit{padding:14px;}
   });
 
   log('تم تحميل الصفحة');
-  log('📦 إصدار الملف: BUILD-2026-09-08-1259');
+  log('📦 إصدار الملف: BUILD-2026-10-14-2105');
 
   window.addEventListener('error', (e) => {
     log('خطأ عام غير متوقع: ' + e.message, true);
@@ -4057,6 +4057,7 @@ button.submit{padding:14px;}
     }
 
     document.getElementById('adminTabBtn').style.display = profile.is_admin ? 'flex' : 'none';
+    try{ document.documentElement.classList.toggle('show-debug', !!profile.is_admin || /[#&?]debug\b/.test(location.hash+location.search)); }catch(e){}
 
     renderHomeAvatar();
     showAppTab('home');
@@ -6531,6 +6532,7 @@ button.submit{padding:14px;}
     document.getElementById('notifBackdrop').classList.remove('active');
     document.getElementById('notifBadge').style.display = 'none';
     document.getElementById('adminTabBtn').style.display = 'none';
+    try{ if(!/[#&?]debug\b/.test(location.hash+location.search)) document.documentElement.classList.remove('show-debug'); }catch(e){}
     document.getElementById('bottomNav').style.display = 'none';
     closeSidebar();
     const authLangSwitcherEl2 = document.getElementById('authLangSwitcher');
