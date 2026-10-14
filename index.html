@@ -329,13 +329,14 @@
     padding-bottom:2px;
   }
   .listing-card-images img{
-    width:72px;
-    height:72px;
-    min-width:72px;
+    width:150px;
+    height:150px;
+    min-width:150px;
     object-fit:cover;
-    border-radius:10px;
+    border-radius:12px;
     border:1px solid var(--border);
     cursor:pointer;
+    box-shadow:0 3px 10px rgba(0,0,0,.12);
   }
   .media-file-name{
     font-size:calc(12px * var(--fs-scale));
@@ -510,6 +511,21 @@
   .post-bg-swatch.selected{border-color:var(--gold,#c9a227);box-shadow:0 0 0 2px rgba(0,0,0,.15);}
   .post-bg-swatch.none-swatch{
     background:#fff;border:1.5px dashed var(--border,#c9c2b0);color:#8a8070;font-size:calc(9px * var(--fs-scale));
+  }
+  /* تلوين كامل بطاقة الإعلان في السوق حسب اللون المختار */
+  .listing-item.post-bg-green{background:linear-gradient(135deg,#2f7d46,#0d3b1f);border-color:transparent;}
+  .listing-item.post-bg-gold{background:linear-gradient(135deg,#f2b632,#a9660f);border-color:transparent;}
+  .listing-item.post-bg-sunset{background:linear-gradient(135deg,#ff7a4d,#c62828);border-color:transparent;}
+  .listing-item.post-bg-sky{background:linear-gradient(135deg,#4aa3d8,#1a5b8a);border-color:transparent;}
+  .listing-item.post-bg-wheat{background:linear-gradient(135deg,#e8c96b,#8a6a1f);border-color:transparent;}
+  .listing-item.post-bg-brown{background:linear-gradient(135deg,#8a5a3b,#4a3320);border-color:transparent;}
+  .listing-item.post-bg-green .chicken-type,.listing-item.post-bg-green .price,.listing-item.post-bg-green .meta,.listing-item.post-bg-green .desc,.listing-item.post-bg-green .owner-name,
+  .listing-item.post-bg-gold .chicken-type,.listing-item.post-bg-gold .price,.listing-item.post-bg-gold .meta,.listing-item.post-bg-gold .desc,.listing-item.post-bg-gold .owner-name,
+  .listing-item.post-bg-sunset .chicken-type,.listing-item.post-bg-sunset .price,.listing-item.post-bg-sunset .meta,.listing-item.post-bg-sunset .desc,.listing-item.post-bg-sunset .owner-name,
+  .listing-item.post-bg-sky .chicken-type,.listing-item.post-bg-sky .price,.listing-item.post-bg-sky .meta,.listing-item.post-bg-sky .desc,.listing-item.post-bg-sky .owner-name,
+  .listing-item.post-bg-wheat .chicken-type,.listing-item.post-bg-wheat .price,.listing-item.post-bg-wheat .meta,.listing-item.post-bg-wheat .desc,.listing-item.post-bg-wheat .owner-name,
+  .listing-item.post-bg-brown .chicken-type,.listing-item.post-bg-brown .price,.listing-item.post-bg-brown .meta,.listing-item.post-bg-brown .desc,.listing-item.post-bg-brown .owner-name{
+    color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.25);
   }
   /* شريط الرموز التعبيرية السريعة */
   .post-textarea-wrap{position:relative;}
@@ -1398,6 +1414,7 @@
   html[data-theme="dark"] .theme-option.active,
   html[data-theme="dark"] .lang-option.active{background:#1E3229;}
 
+  html:not(.show-debug) #debugPanel,html:not(.show-debug) #debugToggle{display:none !important;}
   #debugPanel{
     position:fixed;
     bottom:0;
@@ -1620,11 +1637,11 @@ button.submit{padding:14px;}
 
 <div id="debugPanel" class="no-translate"></div>
 
-<div id="authLangSwitcher" class="no-translate" style="position:fixed;bottom:16px;left:16px;z-index:9998;">
+<div id="authLangSwitcher" class="no-translate" style="position:fixed;bottom:16px;right:16px;z-index:9998;">
   <button type="button" id="authLangBtn" style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e1e9e4;border-radius:20px;padding:8px 14px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;color:#315a47;box-shadow:0 4px 14px rgba(21,42,32,.12);cursor:pointer;">
     🌐 <span id="authLangBtnLabel">العربية</span>
   </button>
-  <div id="authLangMenu" style="display:none;position:absolute;bottom:44px;left:0;background:#fff;border:1px solid #e1e9e4;border-radius:14px;box-shadow:0 8px 24px rgba(21,42,32,.18);overflow:hidden;min-width:150px;"></div>
+  <div id="authLangMenu" style="display:none;position:absolute;bottom:44px;right:0;background:#fff;border:1px solid #e1e9e4;border-radius:14px;box-shadow:0 8px 24px rgba(21,42,32,.18);overflow:hidden;min-width:150px;"></div>
 </div>
 
 <div class="wrap">
@@ -1992,7 +2009,11 @@ button.submit{padding:14px;}
 
       <div class="field">
         <label>الموقع الجغرافي (اختياري)</label>
-        <button type="button" class="media-pick-btn" id="listLocationBtn"><span class="icon">📍</span> تحديد موقعي</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="listShowLocation" style="width:auto;">
+          <label for="listShowLocation" style="margin:0;">إظهار موقعي التقريبي في الإعلان</label>
+        </div>
+        <button type="button" class="media-pick-btn" id="listLocationBtn" style="margin-top:8px;display:none;"><span class="icon">📍</span> تحسين دقة الموقع</button>
         <div id="listLocationStatus" class="meta" style="margin-top:6px;display:none;"></div>
         <input type="hidden" id="listLat">
         <input type="hidden" id="listLng">
@@ -2200,7 +2221,11 @@ button.submit{padding:14px;}
       </div>
       <div class="field">
         <label>الموقع الجغرافي (اختياري)</label>
-        <button type="button" class="media-pick-btn" id="postLocationBtn"><span class="icon">📍</span> تحديد موقعي</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="postShowLocation" style="width:auto;">
+          <label for="postShowLocation" style="margin:0;">إظهار موقعي التقريبي في المنشور</label>
+        </div>
+        <button type="button" class="media-pick-btn" id="postLocationBtn" style="margin-top:8px;display:none;"><span class="icon">📍</span> تحسين دقة الموقع</button>
         <div id="postLocationStatus" class="meta" style="margin-top:6px;display:none;"></div>
         <input type="hidden" id="postLat">
         <input type="hidden" id="postLng">
@@ -2501,6 +2526,7 @@ button.submit{padding:14px;}
       <div class="sub" style="margin-bottom:16px;">اشترك بـ 1000 دج شهريًا للحصول على مزايا إضافية.</div>
       <div id="subscriptionStatusBox"></div>
       <button type="button" id="subscribeNowBtn" class="reveal-btn" style="display:none;width:100%;background:var(--barn-green);color:#fff;font-size:calc(15px * var(--fs-scale));padding:12px;">اشترك الآن — 1000 دج</button>
+      <button type="button" id="subscribeLahsabBtn" class="reveal-btn" style="display:none;width:100%;background:#0a7a3d;color:#fff;font-size:calc(15px * var(--fs-scale));padding:12px;margin-top:8px;">ادفع عبر BaridiMob / CCP — 1000 دج</button>
       <div id="subscribeMsg" class="msg" style="margin-top:10px;"></div>
       <button type="button" id="closeSubscription" style="background:none;border:none;color:#8a8070;font-family:'Cairo',sans-serif;font-size:calc(13px * var(--fs-scale));cursor:pointer;margin-top:14px;padding:0;">إغلاق</button>
     </div>
@@ -2625,6 +2651,7 @@ button.submit{padding:14px;}
     document.documentElement.style.setProperty('--fs-scale', fsMap[savedFs] || 1);
     // ملاحظة: تطبيق اللغة المحفوظة يتم لاحقًا بعد تعريف TRANSLATIONS (انظر أسفل)
   })();
+  try{ if(/[#&?]debug\b/.test(location.hash+location.search)) document.documentElement.classList.add('show-debug'); }catch(e){}
   const debugPanel = document.getElementById('debugPanel');
   function log(text, isErr) {
     const div = document.createElement('div');
@@ -3990,6 +4017,9 @@ button.submit{padding:14px;}
     startActivityHeartbeat();
     initCountryFilter(profile.country_code);
     updateHomeBanner(profile.country_code);
+    // نبدأ تحديد الموقع في الخلفية فور تسجيل الدخول (دون انتظار)، بدل انتظار فتح السوق/الرئيسية،
+    // بحيث تكون النتيجة جاهزة ومخزّنة مسبقًا (currentUserGeo) عند الحاجة إليها.
+    requestUserGeoOnce();
 
     // تعبئة البريد الإلكتروني تلقائيًا في profiles إن كان ناقصًا (حسابات قديمة أو فشل الحفظ عند التسجيل)
     if (!profile.email && user.email) {
@@ -4066,6 +4096,7 @@ button.submit{padding:14px;}
           'نشر إعلانات البيع متاح فقط لحسابات "مربي الدجاج". حسابك مسجل كتاجر.';
       } else {
         document.getElementById('appFormCard').style.display = 'block';
+        autoStartListLocation();
       }
     } else if (tab === 'market') {
       document.getElementById('marketCard').style.display = 'block';
@@ -4092,6 +4123,7 @@ button.submit{padding:14px;}
       if (postComposeOnly) {
         postBrowseElements.forEach(el => el.style.display = 'none');
         if (postBrowseHr) postBrowseHr.style.display = 'none';
+        autoStartPostLocation();
       } else {
         postBrowseElements.forEach(el => {
           el.style.display = '';
@@ -4423,16 +4455,20 @@ button.submit{padding:14px;}
 
   function initCountryFilter(myCountryCode) {
     const sel = document.getElementById('filterCountry');
-    if (!sel || sel.dataset.ready) return;
-    sel.dataset.ready = '1';
-    sel.innerHTML = '<option value="">كل الدول</option>' +
-      COUNTRIES.map(c => '<option value="' + c.code + '">' + c.flag + ' ' + c.name + '</option>').join('');
+    if (!sel) return;
+    if (!sel.dataset.ready) {
+      sel.dataset.ready = '1';
+      sel.innerHTML = '<option value="">كل الدول</option>' +
+        COUNTRIES.map(c => '<option value="' + c.code + '">' + c.flag + ' ' + c.name + '</option>').join('');
+      sel.addEventListener('change', () => {
+        const wilaya = document.getElementById('filterWilaya').value.trim();
+        const commune = document.getElementById('filterCommune').value.trim();
+        loadMarket(wilaya, commune, currentMarketCategory);
+      });
+    }
+    // نعيد ضبط قيمة الدولة الحالية في كل مرة (وليس فقط أول مرة) حتى لا تبقى
+    // عالقة على دولة حساب سابق عند تبديل الحساب دون إعادة تحميل الصفحة.
     sel.value = myCountryCode || DEFAULT_COUNTRY;
-    sel.addEventListener('change', () => {
-      const wilaya = document.getElementById('filterWilaya').value.trim();
-      const commune = document.getElementById('filterCommune').value.trim();
-      loadMarket(wilaya, commune, currentMarketCategory);
-    });
   }
 
   async function loadMarket(wilaya, commune, category) {
@@ -4448,8 +4484,10 @@ button.submit{padding:14px;}
       .order('created_at', { ascending: false });
 
     const countrySel = document.getElementById('filterCountry');
-    const countryFilter = countrySel ? countrySel.value : '';
-    if (countryFilter) query = query.eq('country_code', countryFilter);
+    const countryFilter = (countrySel && countrySel.value)
+      || (currentProfile && currentProfile.country_code)
+      || DEFAULT_COUNTRY;
+    query = query.eq('country_code', countryFilter);
 
     if (wilaya) query = query.ilike('wilaya', '%' + wilaya + '%');
     if (commune) query = query.ilike('commune', '%' + commune + '%');
@@ -4510,7 +4548,7 @@ button.submit{padding:14px;}
     resultsEl.innerHTML = '';
     data.forEach(item => {
       const div = document.createElement('div');
-      div.className = 'listing-item';
+      div.className = 'listing-item' + (item.bg_style ? ' ' + item.bg_style : '');
       const rInfo = ratingMap[item.owner_id];
       const ratingHtml = rInfo
         ? '⭐ ' + (rInfo.total / rInfo.count).toFixed(1) + ' (' + rInfo.count + ' تقييم)'
@@ -4534,7 +4572,7 @@ button.submit{padding:14px;}
         <div class="meta listing-date-clear">${listingDateLabel(item)}</div>
         <div class="meta">${ratingHtml}</div>
         ${(imagesMap[item.id] && imagesMap[item.id].length) ? '<div class="listing-card-images">' + imagesMap[item.id].map(url => '<img src="' + url + '" loading="lazy" onclick="openImageLightbox(this.src)">').join('') + '</div>' : ''}
-        ${item.description ? ((item.bg_style && !(imagesMap[item.id] && imagesMap[item.id].length)) ? '<div class="post-bg-box no-translate ' + escapeHtml(item.bg_style) + '">' + item.description + '</div>' : '<div class="desc no-translate">' + item.description + '</div>') : ''}
+        ${item.description ? '<div class="desc no-translate">' + item.description + '</div>' : ''}
         <div class="phone-area" data-owner="${item.owner_id}"></div>
       `;
       const ownerRowEl = div.querySelector('.owner-row');
@@ -6510,8 +6548,10 @@ button.submit{padding:14px;}
   async function loadSubscriptionStatus() {
     const statusBox = document.getElementById('subscriptionStatusBox');
     const subscribeBtn = document.getElementById('subscribeNowBtn');
+    const lahsabBtn = document.getElementById('subscribeLahsabBtn');
     statusBox.innerHTML = '<div class="empty-state">جارٍ التحقق من حالة الاشتراك...</div>';
     subscribeBtn.style.display = 'none';
+    lahsabBtn.style.display = 'none';
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -6531,9 +6571,11 @@ button.submit{padding:14px;}
         const endDate = new Date(activeSub.end_date).toLocaleDateString('ar-DZ');
         statusBox.innerHTML = '<div class="msg ok" style="display:block;">✅ اشتراكك فعّال حتى تاريخ ' + endDate + '.</div>';
         subscribeBtn.style.display = 'none';
+        lahsabBtn.style.display = 'none';
       } else {
         statusBox.innerHTML = '<div class="msg" style="display:block;">لا يوجد لديك اشتراك فعّال حاليًا.</div>';
         subscribeBtn.style.display = 'block';
+        lahsabBtn.style.display = 'block';
       }
     } catch (err) {
       log('فشل التحقق من حالة الاشتراك: ' + err.message, true);
@@ -6572,6 +6614,41 @@ button.submit{padding:14px;}
       msgEl.textContent = 'تعذر بدء عملية الدفع: ' + err.message;
       btn.disabled = false;
       btn.textContent = 'اشترك الآن — 1000 دج';
+    }
+  });
+
+  document.getElementById('subscribeLahsabBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('subscribeLahsabBtn');
+    const msgEl = document.getElementById('subscribeMsg');
+    btn.disabled = true;
+    btn.textContent = 'جارٍ التحويل لصفحة الدفع...';
+    msgEl.style.display = 'none';
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('يجب تسجيل الدخول أولًا');
+
+      const res = await fetch(SUPABASE_URL + '/functions/v1/lahsab-create-payment', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + session.access_token,
+          'apikey': SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: 1000, plan: 'mensuel' }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.checkoutUrl) {
+        throw new Error(data.error || 'تعذر إنشاء عملية الدفع');
+      }
+      log('تم إنشاء رابط دفع Lahsab بنجاح، جارٍ التحويل...');
+      window.location.href = data.checkoutUrl;
+    } catch (err) {
+      log('فشل بدء عملية الدفع عبر Lahsab: ' + err.message, true);
+      msgEl.style.display = 'block';
+      msgEl.className = 'msg err';
+      msgEl.textContent = 'تعذر بدء عملية الدفع: ' + err.message;
+      btn.disabled = false;
+      btn.textContent = 'ادفع عبر BaridiMob / CCP — 1000 دج';
     }
   });
 
@@ -6668,123 +6745,132 @@ button.submit{padding:14px;}
 
   // تحديد الموقع بأفضل دقة متاحة من الجهاز:
   // نجمع عدة قراءات GPS ونحتفظ بأفضل accuracy بدل الاعتماد على أول قراءة.
-  function setupLocationPicker(btnId, statusId, latId, lngId, successNote) {
+  function runLocationRefine(btnId, statusId, latId, lngId, successNote) {
     const btn = document.getElementById(btnId);
     const status = document.getElementById(statusId);
-    if (!btn) return;
+    if (!status) return;
 
-    btn.addEventListener('click', () => {
-      if (!navigator.geolocation) {
-        status.style.display = 'block';
-        status.textContent = 'المتصفح لا يدعم تحديد الموقع.';
+    if (!navigator.geolocation) {
+      status.style.display = 'block';
+      status.textContent = 'المتصفح لا يدعم تحديد الموقع.';
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="icon">📍</span> جارٍ تحديد الموقع بدقة عالية...';
+    }
+    status.style.display = 'block';
+    status.style.color = '';
+    status.textContent = 'جارٍ البحث عن أدق إشارة GPS...';
+
+    let best = null;
+    let watchId = null;
+    let finished = false;
+    const startedAt = Date.now();
+    const MAX_WAIT = 8000;
+    const GOOD_ENOUGH_ACCURACY = 20; // بالأمتار — يكفي لحساب مسافة تقريبية
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="icon">📍</span> تحسين دقة الموقع';
+      }
+
+      if (!best) {
+        status.style.color = '';
+        status.textContent =
+          'تعذّر الحصول على موقع GPS. تأكد من تشغيل الموقع وحاول في مكان مفتوح.';
         return;
       }
 
-      btn.disabled = true;
-      btn.innerHTML = '<span class="icon">📍</span> جارٍ تحسين الموقع...';
-      status.style.display = 'block';
-      status.style.color = '';
-      status.textContent = 'جارٍ البحث عن أدق إشارة GPS...';
+      document.getElementById(latId).value = best.latitude;
+      document.getElementById(lngId).value = best.longitude;
 
-      let best = null;
-      let watchId = null;
-      let finished = false;
-      const startedAt = Date.now();
-      const MAX_WAIT = 30000;
+      const accuracy = Number(best.accuracy);
+      const accuracyText = accuracy < 1
+        ? accuracy.toFixed(2)
+        : accuracy < 10
+          ? accuracy.toFixed(1)
+          : Math.round(accuracy);
 
-      function finish() {
-        if (finished) return;
-        finished = true;
+      status.style.color = accuracy <= 10 ? '#2E7D32' : '#b45309';
 
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-          watchId = null;
-        }
+      if (accuracy < 1) {
+        status.textContent =
+          'تم تحديد الموقع بدقة ' + accuracyText + ' متر ✓ (' + successNote + ')';
+      } else {
+        status.textContent =
+          'أفضل دقة متاحة: ~' + accuracyText + ' متر ✓ (' + successNote + ')';
+      }
+    }
 
-        btn.disabled = false;
-        btn.innerHTML = '<span class="icon">📍</span> تحديد موقعي';
+    function onPosition(pos) {
+      const a = Number(pos.coords.accuracy);
+      if (!Number.isFinite(a) || a <= 0) return;
 
-        if (!best) {
-          status.style.color = '';
-          status.textContent =
-            'تعذّر الحصول على موقع GPS. تأكد من تشغيل الموقع وحاول في مكان مفتوح.';
-          return;
-        }
+      if (!best || a < Number(best.accuracy)) {
+        best = {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: a
+        };
 
-        document.getElementById(latId).value = best.latitude;
-        document.getElementById(lngId).value = best.longitude;
+        const accuracyText = a < 1
+          ? a.toFixed(2)
+          : a < 10
+            ? a.toFixed(1)
+            : Math.round(a);
 
-        const accuracy = Number(best.accuracy);
-        const accuracyText = accuracy < 1
-          ? accuracy.toFixed(2)
-          : accuracy < 10
-            ? accuracy.toFixed(1)
-            : Math.round(accuracy);
+        status.textContent =
+          'أفضل قراءة حتى الآن: ~' + accuracyText +
+          ' متر — جارٍ البحث عن أدق...';
 
-        status.style.color = accuracy <= 10 ? '#2E7D32' : '#b45309';
-
-        if (accuracy < 1) {
-          status.textContent =
-            'تم تحديد الموقع بدقة ' + accuracyText + ' متر ✓ (' + successNote + ')';
-        } else {
-          status.textContent =
-            'أفضل دقة متاحة: ~' + accuracyText + ' متر ✓ (' + successNote + ')';
-        }
+        // إذا وصلنا لدقة مقبولة بالأمتار، نعتمد القراءة مباشرة بدل انتظار دقة تحت المتر (نادرة الحدوث).
+        if (a <= GOOD_ENOUGH_ACCURACY) finish();
       }
 
-      function onPosition(pos) {
-        const a = Number(pos.coords.accuracy);
-        if (!Number.isFinite(a) || a <= 0) return;
+      if (Date.now() - startedAt >= MAX_WAIT) finish();
+    }
 
-        if (!best || a < Number(best.accuracy)) {
-          best = {
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            accuracy: a
-          };
-
-          const accuracyText = a < 1
-            ? a.toFixed(2)
-            : a < 10
-              ? a.toFixed(1)
-              : Math.round(a);
-
-          status.textContent =
-            'أفضل قراءة حتى الآن: ~' + accuracyText +
-            ' متر — جارٍ البحث عن أدق...';
-
-          // إذا وصل الجهاز فعليًا لأقل من متر، نعتمد القراءة مباشرة.
-          if (a < 1) finish();
-        }
-
-        if (Date.now() - startedAt >= MAX_WAIT) finish();
-      }
-
-      function onError(err) {
-        if (Date.now() - startedAt >= MAX_WAIT) {
-          finish();
-        } else {
-          status.textContent =
-            'إشارة GPS غير مستقرة — جارٍ إعادة المحاولة...';
-        }
-      }
-
-      try {
-        watchId = navigator.geolocation.watchPosition(
-          onPosition,
-          onError,
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
-        );
-
-        setTimeout(finish, MAX_WAIT);
-      } catch (e) {
+    function onError(err) {
+      if (Date.now() - startedAt >= MAX_WAIT) {
         finish();
+      } else {
+        status.textContent =
+          'إشارة GPS غير مستقرة — جارٍ إعادة المحاولة...';
       }
-    });
+    }
+
+    try {
+      watchId = navigator.geolocation.watchPosition(
+        onPosition,
+        onError,
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+
+      setTimeout(finish, MAX_WAIT);
+    } catch (e) {
+      finish();
+    }
+  }
+
+  function setupLocationPicker(btnId, statusId, latId, lngId, successNote) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.addEventListener('click', () => runLocationRefine(btnId, statusId, latId, lngId, successNote));
   }
 
   setupLocationPicker(
@@ -6795,6 +6881,47 @@ button.submit{padding:14px;}
     'postLocationBtn', 'postLocationStatus', 'postLat', 'postLng',
     'سيساعد على معرفة المسافة التقريبية فقط، دون إظهار موقعك الدقيق للعامة'
   );
+
+  // ----- تحديد الموقع تلقائيًا عند فتح نموذج نشر إعلان/منشور (قبل الضغط على نشر) -----
+  // يبدأ البحث عن أدق إشارة GPS بمجرد دخول المستخدم لنموذج النشر، دون انتظار أي إجراء منه،
+  // بحيث يكون الموقع جاهزًا فورًا لحظة الضغط على "نشر". خانة "إظهار الموقع" تتحكم فقط في
+  // إرفاقه فعليًا بالإعلان/المنشور عند الإرسال، وليس في بدء عملية التحديد نفسها.
+  let listLocationAutoStarted = false;
+  let postLocationAutoStarted = false;
+
+  function autoStartListLocation() {
+    if (listLocationAutoStarted) return;
+    listLocationAutoStarted = true;
+    runLocationRefine(
+      'listLocationBtn', 'listLocationStatus', 'listLat', 'listLng',
+      'سيساعد المشترين على معرفة المسافة التقريبية فقط، دون إظهار موقعك الدقيق للعامة'
+    );
+  }
+
+  function autoStartPostLocation() {
+    if (postLocationAutoStarted) return;
+    postLocationAutoStarted = true;
+    runLocationRefine(
+      'postLocationBtn', 'postLocationStatus', 'postLat', 'postLng',
+      'سيساعد على معرفة المسافة التقريبية فقط، دون إظهار موقعك الدقيق للعامة'
+    );
+  }
+
+  // خانة "إظهار الموقع": تُظهر/تُخفي فقط حالة الموقع المحدَّد أصلاً في الخلفية،
+  // ولا تبدأ أو توقف عملية تحديد الموقع نفسها.
+  function wireLocationToggle(checkboxId, btnId, statusId) {
+    const checkbox = document.getElementById(checkboxId);
+    const btn = document.getElementById(btnId);
+    const status = document.getElementById(statusId);
+    if (!checkbox) return;
+
+    checkbox.addEventListener('change', () => {
+      if (btn) btn.style.display = checkbox.checked ? 'inline-flex' : 'none';
+      if (status) status.style.display = checkbox.checked ? 'block' : 'none';
+    });
+  }
+  wireLocationToggle('listShowLocation', 'listLocationBtn', 'listLocationStatus');
+  wireLocationToggle('postShowLocation', 'postLocationBtn', 'postLocationStatus');
 
   // ----- حساب المسافة التقريبية بين نقطتين (كم) -----
   function haversineDistanceKm(lat1, lon1, lat2, lon2) {
@@ -6827,7 +6954,7 @@ button.submit{padding:14px;}
           currentUserGeoPromise = null;
           resolve(null);
         },
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
       );
     });
     return currentUserGeoPromise;
@@ -6922,13 +7049,14 @@ button.submit{padding:14px;}
       commune: document.getElementById('listCommune').value.trim(),
       description: document.getElementById('notes').value.trim() || null,
       status: 'active',
-      bg_style: (listingImageFiles && listingImageFiles.length) ? null : (selectedListingBg || null),
+      bg_style: selectedListingBg || null,
       country_code: (currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY,
     };
 
     const listLatVal = document.getElementById('listLat').value;
     const listLngVal = document.getElementById('listLng').value;
-    if (listLatVal && listLngVal) {
+    const listShowLocationChecked = document.getElementById('listShowLocation') && document.getElementById('listShowLocation').checked;
+    if (listShowLocationChecked && listLatVal && listLngVal) {
       payload.latitude = parseFloat(listLatVal);
       payload.longitude = parseFloat(listLngVal);
     }
@@ -7012,6 +7140,11 @@ button.submit{padding:14px;}
       document.getElementById('listLat').value = '';
       document.getElementById('listLng').value = '';
       if (listLocationStatus) listLocationStatus.style.display = 'none';
+      const listShowLocationEl = document.getElementById('listShowLocation');
+      if (listShowLocationEl) listShowLocationEl.checked = false;
+      listLocationAutoStarted = false;
+      const listLocationBtnEl = document.getElementById('listLocationBtn');
+      if (listLocationBtnEl) listLocationBtnEl.style.display = 'none';
       listingImageFiles = [];
       renderListingImagesPreview();
       resetListingBgPicker();
@@ -7605,6 +7738,7 @@ button.submit{padding:14px;}
 
       const postLatVal = document.getElementById('postLat').value;
       const postLngVal = document.getElementById('postLng').value;
+      const postShowLocationEl2 = document.getElementById('postShowLocation');
 
       const payload = {
         user_id: user.id,
@@ -7618,7 +7752,7 @@ button.submit{padding:14px;}
         bg_style: (imageUrls.length || videoFile) ? null : (selectedPostBg || null),
         country_code: (currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY,
       };
-      if (postLatVal && postLngVal) {
+      if (postShowLocationEl2 && postShowLocationEl2.checked && postLatVal && postLngVal) {
         payload.latitude = parseFloat(postLatVal);
         payload.longitude = parseFloat(postLngVal);
       }
@@ -7673,6 +7807,11 @@ button.submit{padding:14px;}
       document.getElementById('postLng').value = '';
       const postLocationStatusEl = document.getElementById('postLocationStatus');
       if (postLocationStatusEl) postLocationStatusEl.style.display = 'none';
+      const postShowLocationEl = document.getElementById('postShowLocation');
+      if (postShowLocationEl) postShowLocationEl.checked = false;
+      postLocationAutoStarted = false;
+      const postLocationBtnEl = document.getElementById('postLocationBtn');
+      if (postLocationBtnEl) postLocationBtnEl.style.display = 'none';
       resetPostImagePicker();
       resetPostVideoPicker();
 
@@ -8966,37 +9105,48 @@ button.submit{padding:14px;}
       const text = (input.value || '').trim();
       if (!text || sending) return;
       sending = true;
-      sendBtn.disabled = true;
+      if (sendBtn) sendBtn.disabled = true;
       input.value = '';
       addMessage(text, 'user');
       const typingEl = addMessage('يكتب الآن...', 'bot');
       typingEl.classList.add('typing');
-
       try {
         const { data, error } = await supabase.functions.invoke('assistant-chat', {
-          body: { message: text, history: chatHistory, persona: assistantPersona },
+          body: { message: text, history: chatHistory, persona: assistantPersona, provider: 'auto' },
         });
-        typingEl.remove();
+        if (typingEl && typingEl.parentNode) typingEl.remove();
         if (error) {
-          addMessage('تعذّر الاتصال بالمساعد حاليًا. حاول مجددًا بعد قليل.', 'bot');
-          log('فشل استدعاء assistant-chat: ' + error.message, true);
-        } else if (data && data.error) {
-          addMessage('تعذّر الحصول على رد الآن. حاول مجددًا.', 'bot');
-          log('خطأ من دالة assistant-chat: ' + data.error, true);
-        } else {
-          const reply = (data && data.reply) || 'عذرًا، لم أفهم سؤالك.';
-          addMessage(reply, 'bot');
-          chatHistory.push({ role: 'user', text: text });
-          chatHistory.push({ role: 'model', text: reply });
-          if (chatHistory.length > 12) chatHistory = chatHistory.slice(-12);
+          log('فشل استدعاء assistant-chat: ' + (error.message || error), true);
+          addMessage('تعذّر الاتصال بالمساعد حاليًا. حاول مرة أخرى.', 'bot');
+          return;
         }
+        if (!data) {
+          log('assistant-chat أعاد استجابة فارغة.', true);
+          addMessage('لم يصل رد من المساعد. حاول مرة أخرى.', 'bot');
+          return;
+        }
+        if (data.error) {
+          log('assistant-chat error: ' + data.error + (data.details ? ' | ' + data.details : ''), true);
+          addMessage(data.error, 'bot');
+          return;
+        }
+        const reply = String(data.reply || '').trim();
+        if (!reply) {
+          addMessage('وصل الطلب، لكن لم يصل نص الرد. حاول مرة أخرى.', 'bot');
+          return;
+        }
+        addMessage(reply, 'bot');
+        chatHistory.push({ role: 'user', text });
+        chatHistory.push({ role: 'model', text: reply });
+        if (chatHistory.length > 12) chatHistory = chatHistory.slice(-12);
       } catch (e) {
-        typingEl.remove();
-        addMessage('حدث خطأ غير متوقع أثناء الاتصال بالمساعد.', 'bot');
-        log('خطأ غير متوقع في المساعد الذكي: ' + e.message, true);
+        if (typingEl && typingEl.parentNode) typingEl.remove();
+        log('خطأ غير متوقع في المساعد الذكي: ' + (e.message || e), true);
+        addMessage('حدث خطأ أثناء تشغيل المساعد. حاول مرة أخرى.', 'bot');
       } finally {
         sending = false;
-        sendBtn.disabled = false;
+        if (sendBtn) sendBtn.disabled = false;
+        if (input) input.focus();
       }
     }
 
