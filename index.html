@@ -1696,14 +1696,21 @@ button.submit{padding:14px;}
   <div class="panel card" id="panel-reset-password">
     <div class="eyebrow">استعادة الحساب</div>
     <h1 style="font-size:calc(20px * var(--fs-scale));">تعيين كلمة مرور جديدة</h1>
-    <div class="sub">أدخل كلمة المرور الجديدة لحسابك.</div>
+    <div class="sub">أدخل كلمة المرور الجديدة لحسابك ثم أكّدها.</div>
     <form id="resetPasswordForm" novalidate>
       <div class="field">
         <label for="newPassword">كلمة المرور الجديدة</label>
-        <input type="password" id="newPassword" placeholder="6 أحرف على الأقل" minlength="6" required>
+        <input type="password" id="newPassword" placeholder="6 أحرف على الأقل" minlength="6" autocomplete="new-password" required>
+      </div>
+      <div class="field">
+        <label for="confirmNewPassword">تأكيد كلمة المرور</label>
+        <input type="password" id="confirmNewPassword" placeholder="أعد كتابة كلمة المرور" minlength="6" autocomplete="new-password" required>
       </div>
       <button type="button" class="submit" id="saveNewPasswordBtn">حفظ كلمة المرور</button>
       <div id="resetPasswordMsg" class="msg"></div>
+      <div class="forgot-links" style="justify-content:flex-start;margin-top:14px;">
+        <a id="backToLoginFromReset">الرجوع لتسجيل الدخول</a>
+      </div>
     </form>
   </div>
 
@@ -3589,6 +3596,11 @@ button.submit{padding:14px;}
 
   document.getElementById('forgotPasswordLink').addEventListener('click', () => {
     document.getElementById('forgotPasswordMsg').style.display = 'none';
+    // ملء البريد تلقائياً إن كان المستخدم قد أدخله في شاشة الدخول
+    const loginId = (document.getElementById('loginEmail').value || '').trim();
+    if (loginId.includes('@')) {
+      document.getElementById('forgotEmail').value = loginId;
+    }
     goToAuthPanel('panel-forgot-password');
   });
 
@@ -3598,6 +3610,7 @@ button.submit{padding:14px;}
 
   document.getElementById('backToLoginFromForgot').addEventListener('click', () => goToAuthPanel('panel-login'));
   document.getElementById('backToLoginFromForgotEmail').addEventListener('click', () => goToAuthPanel('panel-login'));
+  document.getElementById('backToLoginFromReset').addEventListener('click', () => goToAuthPanel('panel-login'));
 
   const SUPPORT_WHATSAPP_NUMBER = '213775054667';
 
@@ -3694,9 +3707,14 @@ button.submit{padding:14px;}
     const msgEl = document.getElementById('resetPasswordMsg');
     msgEl.style.display = 'none';
     const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
 
     if (!newPassword || newPassword.length < 6) {
       showMsg(msgEl, "كلمة المرور يجب أن تكون 6 أحرف على الأقل.", 'err');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showMsg(msgEl, "كلمتا المرور غير متطابقتين.", 'err');
       return;
     }
 
@@ -3713,6 +3731,8 @@ button.submit{padding:14px;}
       }
       log('تم تحديث كلمة المرور بنجاح، الدخول للتطبيق');
       showMsg(msgEl, "تم تعيين كلمة المرور بنجاح! جارٍ الدخول...", 'ok');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmNewPassword').value = '';
       setTimeout(() => { enterApp(); }, 1200);
     } catch (err) {
       btn.disabled = false;
