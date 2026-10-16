@@ -1995,6 +1995,7 @@ button.submit{padding:14px;}
             </select>
           </div>
         </div>
+        <div id="genUnitHelp" class="price-suffix" style="margin-top:-8px;margin-bottom:12px;">أدخل الكمية بوحدة «قطعة»؛ السعر المعروض هو سعر هذه الوحدة.</div>
 
         <div class="field">
           <label for="genPrice" id="genPriceLabel">السعر (دج للوحدة)</label>
@@ -2700,7 +2701,11 @@ button.submit{padding:14px;}
     if (e.target.id === 'lightboxOverlay') closeImageLightbox();
   });
   async function sharePost(post, authorName) {
-    const shareText = (post.content || '') + '\n\n— عبر تطبيق سوق الدجاج الوطني';
+    const tmp = document.createElement('textarea');
+    tmp.innerHTML = authorName || '';
+    const ownerName = (tmp.value || '').trim();
+    const shareText = (ownerName && ownerName !== 'مستخدم' ? '👤 ' + ownerName + '\n\n' : '') +
+      (post.content || '') + '\n\n— عبر تطبيق سوق الدجاج الوطني';
     try {
       if (navigator.share) {
         await navigator.share({ text: shareText, title: 'سوق الدجاج' });
@@ -6697,6 +6702,68 @@ button.submit{padding:14px;}
   }
   updateChickenTypeLabels();
 
+  const UNIT_OPTIONS_BY_CATEGORY = {
+    feed: [
+      { value: 'كيس', label: 'كيس' },
+      { value: 'كيس 25 كغ', label: 'كيس 25 كغ' },
+      { value: 'كيس 50 كغ', label: 'كيس 50 كغ' },
+      { value: 'كغ', label: 'كغ' },
+      { value: 'قنطار', label: 'قنطار (100 كغ)' },
+      { value: 'طن', label: 'طن' }
+    ],
+    meds: [
+      { value: 'علبة', label: 'علبة' },
+      { value: 'قارورة', label: 'قارورة' },
+      { value: 'عبوة', label: 'عبوة' },
+      { value: 'ظرف', label: 'ظرف (كيس صغير)' },
+      { value: 'لتر', label: 'لتر' },
+      { value: 'مل', label: 'مل' },
+      { value: 'كغ', label: 'كغ' },
+      { value: 'غرام', label: 'غرام' },
+      { value: 'جرعة', label: 'جرعة (لقاح)' },
+      { value: 'قطعة', label: 'قطعة' }
+    ],
+    chicks_eggs: [
+      { value: 'فلوس', label: 'فلوس (صوص)' },
+      { value: 'كتكوت', label: 'كتكوت' },
+      { value: 'بيضة', label: 'بيضة' },
+      { value: 'ألف فلوس', label: 'ألف فلوس (1000)' },
+      { value: 'ألف بيضة', label: 'ألف بيضة (1000)' },
+      { value: 'طبق', label: 'طبق بيض' },
+      { value: 'كرتونة', label: 'كرتونة بيض' },
+      { value: 'قطعة', label: 'قطعة' }
+    ],
+    equipment: [
+      { value: 'قطعة', label: 'قطعة' },
+      { value: 'كيس', label: 'كيس' },
+      { value: 'علبة', label: 'علبة' }
+    ]
+  };
+
+  function unitOptionsForCategory(cat) {
+    return UNIT_OPTIONS_BY_CATEGORY[cat] || UNIT_OPTIONS_BY_CATEGORY.equipment;
+  }
+
+  function buildUnitOptionsHtml(cat, selectedUnit) {
+    const options = unitOptionsForCategory(cat).slice();
+    if (selectedUnit && !options.some(option => option.value === selectedUnit)) {
+      options.unshift({ value: selectedUnit, label: selectedUnit });
+    }
+    return options.map(option =>
+      '<option value="' + escapeHtml(option.value) + '"' +
+      (option.value === selectedUnit ? ' selected' : '') + '>' +
+      escapeHtml(option.label) + '</option>'
+    ).join('');
+  }
+
+  function updateGenericUnitPriceLabel() {
+    const cat = document.getElementById('listCategory').value;
+    const unit = document.getElementById('genUnit').value || 'وحدة';
+    document.getElementById('genPriceLabel').textContent = 'السعر (دج لكل ' + unit + ')';
+    const hint = document.getElementById('genUnitHelp');
+    if (hint) hint.textContent = 'أدخل الكمية بوحدة «' + unit + '»؛ السعر المعروض هو سعر هذه الوحدة.';
+  }
+
   const GENERIC_CAT_CONFIG = {
     feed: {
       itemNameLabel: 'نوع العلف',
@@ -6716,10 +6783,10 @@ button.submit{padding:14px;}
     },
     chicks_eggs: {
       itemNameLabel: 'النوع',
-      itemNamePlaceholder: 'مثال: صيصان يوم، بيض تفقيس، بيض استهلاك...',
-      qtyLabel: 'العدد',
+      itemNamePlaceholder: 'مثال: فلوس (صيصان) يوم، بيض تفقيس، بيض استهلاك...',
+      qtyLabel: 'الكمية',
       qtyPlaceholder: 'مثال: 200',
-      defaultUnit: 'قطعة',
+      defaultUnit: 'فلوس',
       priceLabel: 'السعر (دج للوحدة)'
     },
     equipment: {
@@ -6739,9 +6806,29 @@ button.submit{padding:14px;}
     document.getElementById('itemName').placeholder = cfg.itemNamePlaceholder;
     document.getElementById('genQuantityLabel').textContent = cfg.qtyLabel;
     document.getElementById('genQuantity').placeholder = cfg.qtyPlaceholder;
-    document.getElementById('genPriceLabel').textContent = cfg.priceLabel;
-    document.getElementById('genUnit').value = cfg.defaultUnit;
+
+    const unitSelect = document.getElementById('genUnit');
+    unitSelect.innerHTML = buildUnitOptionsHtml(cat, cfg.defaultUnit);
+    unitSelect.dataset.userSelected = 'false';
+    updateGenericUnitPriceLabel();
   }
+
+  document.getElementById('genUnit').addEventListener('change', () => {
+    document.getElementById('genUnit').dataset.userSelected = 'true';
+    updateGenericUnitPriceLabel();
+  });
+
+  document.getElementById('itemName').addEventListener('input', (event) => {
+    const cat = document.getElementById('listCategory').value;
+    const unitSelect = document.getElementById('genUnit');
+    if (cat !== 'chicks_eggs' || unitSelect.dataset.userSelected === 'true') return;
+    const itemName = event.target.value;
+    let suggestedUnit = 'فلوس';
+    if (/بيض/.test(itemName)) suggestedUnit = 'بيضة';
+    else if (/فلوس|فلاليس|صوص|كتكوت|صيصان|فروج\s*يوم/.test(itemName)) suggestedUnit = 'فلوس';
+    unitSelect.value = suggestedUnit;
+    updateGenericUnitPriceLabel();
+  });
 
   function toggleListingCategoryFields() {
     const cat = document.getElementById('listCategory').value;
@@ -8507,6 +8594,7 @@ button.submit{padding:14px;}
         ` : `
           ${fieldRow('اسم السلعة', '<input type="text" id="edit_itemname_' + item.id + '" value="' + escapeHtml(item.item_name || '') + '" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">')}
           ${fieldRow('الكمية', '<input type="number" id="edit_qty_' + item.id + '" value="' + (item.quantity || '') + '" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">')}
+          ${fieldRow('الوحدة', '<select id="edit_unit_' + item.id + '" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">' + buildUnitOptionsHtml(item.category, item.unit) + '</select>')}
           ${fieldRow('السعر (دج)', '<input type="number" id="edit_price_' + item.id + '" value="' + (item.price || '') + '" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">')}
           ${fieldRow('الولاية', '<input type="text" id="edit_wilaya_' + item.id + '" value="' + escapeHtml(item.wilaya || '') + '" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">')}
           ${fieldRow('البلدية', '<input type="text" id="edit_commune_' + item.id + '" value="' + escapeHtml(item.commune || '') + '" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);">')}
@@ -8611,6 +8699,7 @@ button.submit{padding:14px;}
               updatePayload.weight_kg = parseFloat(document.getElementById('edit_weight_' + item.id).value);
             } else {
               updatePayload.item_name = document.getElementById('edit_itemname_' + item.id).value.trim();
+              updatePayload.unit = document.getElementById('edit_unit_' + item.id).value;
             }
 
             const { error: updErr } = await supabase.from('listings').update(updatePayload).eq('id', item.id).eq('owner_id', user.id);
