@@ -2531,7 +2531,7 @@ button.submit{padding:14px;}
     <!-- الاشتراك -->
     <div class="card" id="subscriptionCard" style="display:none;">
       <h1 style="font-size:calc(20px * var(--fs-scale));margin-bottom:4px;" data-i18n="h_subscription">الاشتراك</h1>
-      <div class="sub" style="margin-bottom:16px;">اشترك بـ 1000 دج شهريًا للحصول على مزايا إضافية.</div>
+      <div class="sub" id="subscriptionPlanText" style="margin-bottom:16px;">جارٍ تحميل خطة الاشتراك لبلدك...</div>
       <div id="subscriptionStatusBox"></div>
       <button type="button" id="subscribeNowBtn" class="reveal-btn" style="display:none;width:100%;background:var(--barn-green);color:#fff;font-size:calc(15px * var(--fs-scale));padding:12px;">اشترك الآن — 1000 دج</button>
       <button type="button" id="subscribeLahsabBtn" class="reveal-btn" style="display:none;width:100%;background:#0a7a3d;color:#fff;font-size:calc(15px * var(--fs-scale));padding:12px;margin-top:8px;">ادفع عبر BaridiMob / CCP — 1000 دج</button>
@@ -6572,6 +6572,7 @@ button.submit{padding:14px;}
     loadSubscriptionStatus();
   });
 
+  let currentCountryPlan = null;
   async function loadSubscriptionStatus() {
     const statusBox = document.getElementById('subscriptionStatusBox');
     const subscribeBtn = document.getElementById('subscribeNowBtn');
@@ -6579,9 +6580,29 @@ button.submit{padding:14px;}
     statusBox.innerHTML = '<div class="empty-state">جارٍ التحقق من حالة الاشتراك...</div>';
     subscribeBtn.style.display = 'none';
     lahsabBtn.style.display = 'none';
+    const planText = document.getElementById('subscriptionPlanText');
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      const countryCode = (currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY;
+      const { data: plan } = await supabase
+        .from('country_subscription_plans')
+        .select('plan_type, plan_name, price, currency, interval_days, payment_methods, active, note')
+        .eq('country_code', countryCode)
+        .eq('active', true)
+        .maybeSingle();
+      currentCountryPlan = plan || null;
+      const country = getCountry(countryCode);
+      if (!plan) {
+        planText.textContent = 'لا توجد خطة اشتراك متاحة في ' + country.name + ' حاليًا، ويمكنك استخدام التطبيق مجانًا.';
+        statusBox.innerHTML = '';
+        return;
+      }
+      const priceTxt = Number(plan.price) + ' ' + currencyFor(countryCode);
+      const periodTxt = plan.interval_days >= 360 ? 'سنويًا' : (plan.interval_days >= 28 && plan.interval_days <= 31 ? 'شهريًا' : 'كل ' + plan.interval_days + ' يومًا');
+      planText.textContent = (plan.plan_name ? plan.plan_name + ': ' : '') + 'اشترك بـ ' + priceTxt + ' ' + periodTxt + ' (' + country.flag + ' ' + country.name + ').' + (plan.note ? ' ' + plan.note : '');
+      subscribeBtn.textContent = 'اشترك الآن — ' + priceTxt;
+      lahsabBtn.textContent = 'ادفع عبر BaridiMob / CCP — ' + priceTxt;
       const nowIso = new Date().toISOString();
       const { data: activeSub, error } = await supabase
         .from('subscriptions')
@@ -6601,8 +6622,12 @@ button.submit{padding:14px;}
         lahsabBtn.style.display = 'none';
       } else {
         statusBox.innerHTML = '<div class="msg" style="display:block;">لا يوجد لديك اشتراك فعّال حاليًا.</div>';
-        subscribeBtn.style.display = 'block';
-        lahsabBtn.style.display = 'block';
+        const methods = currentCountryPlan.payment_methods || [];
+        subscribeBtn.style.display = methods.includes('chargily') ? 'block' : 'none';
+        lahsabBtn.style.display = methods.includes('lahsab') ? 'block' : 'none';
+        if (!methods.length) {
+          statusBox.innerHTML += '<div class="msg" style="display:block;">طرق الدفع غير متاحة بعد في بلدك.</div>';
+        }
       }
     } catch (err) {
       log('فشل التحقق من حالة الاشتراك: ' + err.message, true);
@@ -6640,7 +6665,7 @@ button.submit{padding:14px;}
       msgEl.className = 'msg err';
       msgEl.textContent = 'تعذر بدء عملية الدفع: ' + err.message;
       btn.disabled = false;
-      btn.textContent = 'اشترك الآن — 1000 دج';
+      btn.textContent = 'اشترك الآن — ' + (currentCountryPlan ? Number(currentCountryPlan.price) + ' ' + currencyFor((currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY) : '');
     }
   });
 
@@ -6661,7 +6686,7 @@ button.submit{padding:14px;}
           'apikey': SUPABASE_ANON_KEY,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ amount: 1000, plan: 'mensuel' }),
+        body: JSON.stringify({ amount: currentCountryPlan ? Number(currentCountryPlan.price) : 1000, plan: (currentCountryPlan && currentCountryPlan.plan_type) || 'mensuel' }),
       });
       const data = await res.json();
       if (!res.ok || !data.checkoutUrl) {
@@ -6675,7 +6700,7 @@ button.submit{padding:14px;}
       msgEl.className = 'msg err';
       msgEl.textContent = 'تعذر بدء عملية الدفع: ' + err.message;
       btn.disabled = false;
-      btn.textContent = 'ادفع عبر BaridiMob / CCP — 1000 دج';
+      btn.textContent = 'ادفع عبر BaridiMob / CCP — ' + (currentCountryPlan ? Number(currentCountryPlan.price) + ' ' + currencyFor((currentProfile && currentProfile.country_code) || DEFAULT_COUNTRY) : '');
     }
   });
 
