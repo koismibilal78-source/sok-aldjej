@@ -187,6 +187,8 @@
   }
   .msg.ok{background:#EAF3EC;color:#2F5C40;display:block;}
   .msg.err{background:#FBEAE5;color:var(--err);display:block;}
+  .field-wrong-input{border-color:#E10000 !important;box-shadow:0 0 0 2px rgba(225,0,0,0.15) !important;}
+  .field-wrong-label{display:block;margin-top:4px;color:#E10000;font-weight:700;font-size:calc(13px * var(--fs-scale));}
 
   .forgot-links{
     display:flex;
@@ -1602,6 +1604,11 @@ button.submit{padding:14px;}
           <button type="button" class="submit" id="sendLiveCommentBtn" style="width:auto;padding:0 16px;border-radius:20px;">إرسال</button>
         </div>
       </div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button type="button" class="logout" id="recordLiveBtn" style="flex:1;">⏺️ تسجيل البث</button>
+        <button type="button" class="logout" id="shareLiveBtn" style="flex:1;">📤 مشاركة البث</button>
+      </div>
+      <div id="recordLiveStatus" style="display:none;margin-top:6px;font-size:calc(12px * var(--fs-scale));color:#8a8070;"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
         <span id="viewerCountLabel" style="font-size:calc(13px * var(--fs-scale));color:#8a8070;">👁️ 0 مشاهد</span>
         <button type="button" class="logout" id="endLiveBtn">إنهاء البث</button>
@@ -1616,7 +1623,10 @@ button.submit{padding:14px;}
     <button type="button" class="profile-modal-close" id="watchCloseBtn" aria-label="إغلاق"></button>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
       <h1 style="font-size:calc(16px * var(--fs-scale));margin:0;" id="watchTitle">بث مباشر</h1>
-      <span style="font-size:calc(13px * var(--fs-scale));color:var(--barn-green);">🔴 مباشر</span>
+      <span style="display:flex;align-items:center;gap:10px;">
+        <button type="button" id="watchShareBtn" aria-label="مشاركة" style="background:none;border:none;font-size:calc(18px * var(--fs-scale));cursor:pointer;padding:0;">📤</button>
+        <span style="font-size:calc(13px * var(--fs-scale));color:var(--barn-green);">🔴 مباشر</span>
+      </span>
     </div>
     <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;">
       <video id="remoteVideo" autoplay playsinline muted style="width:100%;display:block;max-height:480px;object-fit:cover;"></video>
@@ -1862,16 +1872,16 @@ button.submit{padding:14px;}
         </div>
         <div class="row2">
           <div class="field">
-            <label for="homePostDate">التاريخ</label>
+            <label for="homePostDate" data-i18n="post_date_label">التاريخ</label>
             <select id="homePostDate">
-              <option value="all">كل التواريخ</option>
-              <option value="today">اليوم</option>
-              <option value="week">هذا الأسبوع</option>
-              <option value="month">هذا الشهر</option>
+              <option value="all" data-i18n="date_all">كل التواريخ</option>
+              <option value="today" data-i18n="date_today">اليوم</option>
+              <option value="week" data-i18n="date_week">هذا الأسبوع</option>
+              <option value="month" data-i18n="date_month">هذا الشهر</option>
             </select>
           </div>
           <div class="field" style="display:flex;align-items:flex-end;gap:8px;">
-            <button type="button" class="reveal-btn" id="homePostReset" style="width:100%;">إعادة التصفية</button>
+            <button type="button" class="reveal-btn" id="homePostReset" style="width:100%;" data-i18n="filter_reset_btn">إعادة التصفية</button>
           </div>
         </div>
         <div id="homePostFilterInfo" class="sub" style="display:none;margin-top:4px;"></div>
@@ -3082,6 +3092,8 @@ button.submit{padding:14px;}
   // ===== نظام الترجمة الأساسي (يتغيّر حسب لغة الدولة المختارة) =====
   const TRANSLATIONS = {
     ar: {
+      gate_breeder_only:'نشر إعلانات البيع متاح فقط لحسابات "مربي الدجاج". حسابك مسجل كتاجر.', gate_no_profile:'تعذر العثور على ملفك الشخصي. حاول تسجيل الخروج والدخول من جديد.', gate_pending:'حسابك قيد المراجعة من قبل الإدارة، سيتم تفعيله قريبًا.', gate_rejected:'تم رفض حسابك من قبل الإدارة. للاستفسار، تواصل مع الدعم.',
+      post_date_label:'التاريخ', date_all:'كل التواريخ', date_today:'اليوم', date_week:'هذا الأسبوع', date_month:'هذا الشهر', filter_reset_btn:'إعادة التصفية',
       app_title:'سوق الدجاج الوطني', welcome_title:'أهلاً بك', welcome_sub:'سجّل حسابًا جديدًا أو ادخل ببريدك الإلكتروني وكلمة المرور.',
       tab_login:'تسجيل الدخول', tab_register:'حساب جديد',
       login_id_label:'البريد الإلكتروني أو رقم الهاتف', login_id_ph:'البريد الإلكتروني أو 0775 XX XX XX',
@@ -3105,6 +3117,8 @@ button.submit{padding:14px;}
       about_app_name_label:'اسم التطبيق', about_desc_label:'الوصف', about_desc_value:'منصة وطنية تربط مربي الدجاج بالتجار، للتصفح والبيع والمراسلة والبث المباشر.', about_version_label:'الإصدار',
     },
     fr: {
+      gate_breeder_only:'La publication d\'annonces de vente est réservée aux comptes « Éleveur de volailles ». Votre compte est enregistré comme commerçant.', gate_no_profile:'Impossible de trouver votre profil. Essayez de vous déconnecter puis de vous reconnecter.', gate_pending:'Votre compte est en cours de vérification par l\'administration et sera bientôt activé.', gate_rejected:'Votre compte a été refusé par l\'administration. Contactez le support pour plus d\'informations.',
+      post_date_label:'Date', date_all:'Toutes les dates', date_today:'Aujourd\'hui', date_week:'Cette semaine', date_month:'Ce mois-ci', filter_reset_btn:'Réinitialiser',
       app_title:'Marché National de Volaille', welcome_title:'Bienvenue', welcome_sub:"Créez un compte ou connectez-vous avec votre email et mot de passe.",
       tab_login:'Connexion', tab_register:'Nouveau compte',
       login_id_label:'Email ou téléphone', login_id_ph:'Email ou 0775 XX XX XX',
@@ -3128,6 +3142,8 @@ button.submit{padding:14px;}
       about_app_name_label:"Nom de l'application", about_desc_label:'Description', about_desc_value:"Plateforme nationale reliant les éleveurs de volailles aux commerçants, pour la navigation, la vente, la messagerie et la diffusion en direct.", about_version_label:'Version',
     },
     en: {
+      gate_breeder_only:'Posting sale listings is only available to "Poultry Breeder" accounts. Your account is registered as a trader.', gate_no_profile:'Could not find your profile. Try logging out and logging in again.', gate_pending:'Your account is under review by the administration and will be activated soon.', gate_rejected:'Your account was rejected by the administration. Contact support for more information.',
+      post_date_label:'Date', date_all:'All dates', date_today:'Today', date_week:'This week', date_month:'This month', filter_reset_btn:'Reset filters',
       app_title:'National Poultry Market', welcome_title:'Welcome', welcome_sub:'Create a new account or sign in with your email and password.',
       tab_login:'Sign In', tab_register:'New Account',
       login_id_label:'Email or phone number', login_id_ph:'Email or 0775 XX XX XX',
@@ -3151,6 +3167,8 @@ button.submit{padding:14px;}
       about_app_name_label:'App name', about_desc_label:'Description', about_desc_value:'A national platform connecting poultry farmers with traders, for browsing, selling, messaging, and live broadcasting.', about_version_label:'Version',
     },
     es: {
+      gate_breeder_only:'Publicar anuncios de venta solo está disponible para cuentas de "Criador de aves". Tu cuenta está registrada como comerciante.', gate_no_profile:'No se pudo encontrar tu perfil. Intenta cerrar sesión y volver a iniciarla.', gate_pending:'Tu cuenta está en revisión por la administración y se activará pronto.', gate_rejected:'Tu cuenta fue rechazada por la administración. Contacta con soporte para más información.',
+      post_date_label:'Fecha', date_all:'Todas las fechas', date_today:'Hoy', date_week:'Esta semana', date_month:'Este mes', filter_reset_btn:'Restablecer filtros',
       app_title:'Mercado Nacional Avícola', welcome_title:'Bienvenido', welcome_sub:'Crea una cuenta o inicia sesión con tu correo y contraseña.',
       tab_login:'Iniciar sesión', tab_register:'Cuenta nueva',
       login_id_label:'Correo o teléfono', login_id_ph:'Correo o 0775 XX XX XX',
@@ -3174,6 +3192,8 @@ button.submit{padding:14px;}
       about_app_name_label:'Nombre de la app', about_desc_label:'Descripción', about_desc_value:'Una plataforma nacional que conecta a los criadores de aves de corral con los comerciantes, para navegar, vender, enviar mensajes y transmitir en vivo.', about_version_label:'Versión',
     },
     de: {
+      gate_breeder_only:'Verkaufsanzeigen können nur von Konten des Typs „Geflügelzüchter“ veröffentlicht werden. Ihr Konto ist als Händler registriert.', gate_no_profile:'Ihr Profil wurde nicht gefunden. Melden Sie sich ab und erneut an.', gate_pending:'Ihr Konto wird von der Verwaltung geprüft und bald freigeschaltet.', gate_rejected:'Ihr Konto wurde von der Verwaltung abgelehnt. Wenden Sie sich für weitere Informationen an den Support.',
+      post_date_label:'Datum', date_all:'Alle Daten', date_today:'Heute', date_week:'Diese Woche', date_month:'Diesen Monat', filter_reset_btn:'Filter zurücksetzen',
       app_title:'Nationaler Geflügelmarkt', welcome_title:'Willkommen', welcome_sub:'Erstellen Sie ein Konto oder melden Sie sich mit E-Mail und Passwort an.',
       tab_login:'Anmelden', tab_register:'Neues Konto',
       login_id_label:'E-Mail oder Telefon', login_id_ph:'E-Mail oder 0775 XX XX XX',
@@ -3197,6 +3217,8 @@ button.submit{padding:14px;}
       about_app_name_label:'App-Name', about_desc_label:'Beschreibung', about_desc_value:'Eine landesweite Plattform, die Geflügelzüchter mit Händlern verbindet, zum Durchsuchen, Verkaufen, Nachrichtenversand und Live-Übertragung.', about_version_label:'Version',
     },
     tr: {
+      gate_breeder_only:'Satış ilanı yayınlamak yalnızca "Tavuk yetiştiricisi" hesaplarına açıktır. Hesabınız tüccar olarak kayıtlı.', gate_no_profile:'Profiliniz bulunamadı. Çıkış yapıp tekrar giriş yapmayı deneyin.', gate_pending:'Hesabınız yönetim tarafından inceleniyor, yakında etkinleştirilecek.', gate_rejected:'Hesabınız yönetim tarafından reddedildi. Daha fazla bilgi için destekle iletişime geçin.',
+      post_date_label:'Tarih', date_all:'Tüm tarihler', date_today:'Bugün', date_week:'Bu hafta', date_month:'Bu ay', filter_reset_btn:'Filtreleri sıfırla',
       app_title:'Ulusal Kümes Hayvanları Pazarı', welcome_title:'Hoş geldiniz', welcome_sub:'Yeni bir hesap oluşturun veya e-posta ve şifrenizle giriş yapın.',
       tab_login:'Giriş yap', tab_register:'Yeni hesap',
       login_id_label:'E-posta veya telefon', login_id_ph:'E-posta veya 0775 XX XX XX',
@@ -3220,6 +3242,8 @@ button.submit{padding:14px;}
       about_app_name_label:'Uygulama adı', about_desc_label:'Açıklama', about_desc_value:'Kümes hayvanı yetiştiricilerini tüccarlarla buluşturan; göz atma, satış, mesajlaşma ve canlı yayın imkânı sunan ulusal bir platform.', about_version_label:'Sürüm',
     },
     it: {
+      gate_breeder_only:'La pubblicazione di annunci di vendita è disponibile solo per gli account "Allevatore di pollame". Il tuo account è registrato come commerciante.', gate_no_profile:'Impossibile trovare il tuo profilo. Prova a uscire e ad accedere di nuovo.', gate_pending:'Il tuo account è in revisione da parte dell\'amministrazione e sarà attivato presto.', gate_rejected:'Il tuo account è stato rifiutato dall\'amministrazione. Contatta l\'assistenza per maggiori informazioni.',
+      post_date_label:'Data', date_all:'Tutte le date', date_today:'Oggi', date_week:'Questa settimana', date_month:'Questo mese', filter_reset_btn:'Reimposta filtri',
       app_title:'Mercato Nazionale del Pollame', welcome_title:'Benvenuto', welcome_sub:'Crea un account o accedi con la tua email e password.',
       tab_login:'Accedi', tab_register:'Nuovo account',
       login_id_label:'Email o telefono', login_id_ph:'Email o 0775 XX XX XX',
@@ -3243,6 +3267,8 @@ button.submit{padding:14px;}
       about_app_name_label:"Nome dell'app", about_desc_label:'Descrizione', about_desc_value:"Una piattaforma nazionale che collega gli allevatori di pollame ai commercianti, per navigare, vendere, messaggiare e trasmettere in diretta.", about_version_label:'Versione',
     },
     pt: {
+      gate_breeder_only:'A publicação de anúncios de venda está disponível apenas para contas de "Criador de aves". Sua conta está registrada como comerciante.', gate_no_profile:'Não foi possível encontrar seu perfil. Tente sair e entrar novamente.', gate_pending:'Sua conta está em análise pela administração e será ativada em breve.', gate_rejected:'Sua conta foi recusada pela administração. Entre em contato com o suporte para mais informações.',
+      post_date_label:'Data', date_all:'Todas as datas', date_today:'Hoje', date_week:'Esta semana', date_month:'Este mês', filter_reset_btn:'Redefinir filtros',
       app_title:'Mercado Nacional Avícola', welcome_title:'Bem-vindo', welcome_sub:'Crie uma conta ou entre com seu e-mail e senha.',
       tab_login:'Entrar', tab_register:'Nova conta',
       login_id_label:'E-mail ou telefone', login_id_ph:'E-mail ou 0775 XX XX XX',
@@ -3266,6 +3292,8 @@ button.submit{padding:14px;}
       about_app_name_label:'Nome do app', about_desc_label:'Descrição', about_desc_value:'Uma plataforma nacional que conecta criadores de aves a comerciantes, para navegar, vender, enviar mensagens e transmitir ao vivo.', about_version_label:'Versão',
     },
     nl: {
+      gate_breeder_only:'Verkoopadvertenties plaatsen is alleen mogelijk voor accounts van het type "Pluimveehouder". Uw account is geregistreerd als handelaar.', gate_no_profile:'Uw profiel is niet gevonden. Log uit en log opnieuw in.', gate_pending:'Uw account wordt beoordeeld door de beheerders en wordt binnenkort geactiveerd.', gate_rejected:'Uw account is door de beheerders afgewezen. Neem contact op met support voor meer informatie.',
+      post_date_label:'Datum', date_all:'Alle datums', date_today:'Vandaag', date_week:'Deze week', date_month:'Deze maand', filter_reset_btn:'Filters wissen',
       app_title:'Nationale Pluimveemarkt', welcome_title:'Welkom', welcome_sub:'Maak een account aan of log in met je e-mail en wachtwoord.',
       tab_login:'Inloggen', tab_register:'Nieuw account',
       login_id_label:'E-mail of telefoon', login_id_ph:'E-mail of 0775 XX XX XX',
@@ -3289,6 +3317,8 @@ button.submit{padding:14px;}
       about_app_name_label:'App-naam', about_desc_label:'Beschrijving', about_desc_value:'Een nationaal platform dat pluimveehouders verbindt met handelaren, om te bladeren, verkopen, chatten en live uit te zenden.', about_version_label:'Versie',
     },
     ru: {
+      gate_breeder_only:'Размещать объявления о продаже могут только аккаунты «Птицевод». Ваш аккаунт зарегистрирован как торговец.', gate_no_profile:'Не удалось найти ваш профиль. Попробуйте выйти и войти снова.', gate_pending:'Ваш аккаунт проверяется администрацией и скоро будет активирован.', gate_rejected:'Ваш аккаунт отклонён администрацией. Свяжитесь с поддержкой для получения дополнительной информации.',
+      post_date_label:'Дата', date_all:'Все даты', date_today:'Сегодня', date_week:'На этой неделе', date_month:'В этом месяце', filter_reset_btn:'Сбросить фильтры',
       app_title:'Национальный рынок птицы', welcome_title:'Добро пожаловать', welcome_sub:'Создайте аккаунт или войдите с email и паролем.',
       tab_login:'Вход', tab_register:'Новый аккаунт',
       login_id_label:'Email или телефон', login_id_ph:'Email или 0775 XX XX XX',
@@ -3996,6 +4026,33 @@ button.submit{padding:14px;}
   }
 
 
+  // رابط بث مباشر: ?live=<id> يُفتح تلقائيًا بعد تسجيل الدخول
+  let pendingLiveId = null;
+  try { pendingLiveId = new URLSearchParams(location.search).get('live'); } catch (e) {}
+
+  async function openPendingLive() {
+    const id = pendingLiveId;
+    if (!id) return;
+    pendingLiveId = null;
+    try {
+      const { data: stream, error } = await supabase.from('live_streams').select('*').eq('id', id).maybeSingle();
+      if (error) throw error;
+      if (!stream || stream.status !== 'live') {
+        alert('انتهى هذا البث المباشر أو لم يعد متاحًا.');
+        return;
+      }
+      showAppTab('live');
+      await watchLive(stream);
+    } catch (err) {
+      log('تعذر فتح رابط البث: ' + (err.message || err), true);
+    }
+  }
+
+  function gateText(key, fallbackAr) {
+    const d = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS[currentLang]) || null;
+    return (d && d[key]) || fallbackAr;
+  }
+
   async function enterApp() {
     document.getElementById('tabsBar').style.display = 'none';
     const authLangSwitcherEl = document.getElementById('authLangSwitcher');
@@ -4033,7 +4090,7 @@ button.submit{padding:14px;}
       log('تعذر جلب الملف الشخصي: ' + (error ? error.message : 'غير موجود'), true);
       document.getElementById('appGate').style.display = 'block';
       document.getElementById('appGate').querySelector('p').textContent =
-        'تعذر العثور على ملفك الشخصي. حاول تسجيل الخروج والدخول من جديد.';
+        gateText('gate_no_profile', 'تعذر العثور على ملفك الشخصي. حاول تسجيل الخروج والدخول من جديد.');
       return;
     }
 
@@ -4077,8 +4134,8 @@ button.submit{padding:14px;}
       document.getElementById('appGate').style.display = 'block';
       document.getElementById('appGate').querySelector('p').textContent =
         profile.is_approved === null
-          ? 'حسابك قيد المراجعة من قبل الإدارة، سيتم تفعيله قريبًا.'
-          : 'تم رفض حسابك من قبل الإدارة. للاستفسار، تواصل مع الدعم.';
+          ? gateText('gate_pending', 'حسابك قيد المراجعة من قبل الإدارة، سيتم تفعيله قريبًا.')
+          : gateText('gate_rejected', 'تم رفض حسابك من قبل الإدارة. للاستفسار، تواصل مع الدعم.');
       return;
     }
 
@@ -4088,6 +4145,7 @@ button.submit{padding:14px;}
     renderHomeAvatar();
     showAppTab('home');
     updateNotifBadge();
+    openPendingLive();
   }
 
   function closeSidebar() {
@@ -4120,7 +4178,7 @@ button.submit{padding:14px;}
       if (currentProfile && currentProfile.user_type !== 'breeder') {
         document.getElementById('appGate').style.display = 'block';
         document.getElementById('appGate').querySelector('p').textContent =
-          'نشر إعلانات البيع متاح فقط لحسابات "مربي الدجاج". حسابك مسجل كتاجر.';
+        gateText('gate_breeder_only', 'نشر إعلانات البيع متاح فقط لحسابات مربي الدجاج. حسابك مسجل كتاجر.');
       } else {
         document.getElementById('appFormCard').style.display = 'block';
         autoStartListLocation();
@@ -4992,7 +5050,135 @@ button.submit{padding:14px;}
     }
   }
 
+  // ----- تسجيل البث ومشاركته -----
+  let liveRecorder = null;
+  let liveRecChunks = [];
+  let liveRecTimer = null;
+  let liveRecStartedAt = 0;
+
+  function pickRecorderMime() {
+    const types = ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    if (!window.MediaRecorder) return '';
+    for (const t of types) { if (MediaRecorder.isTypeSupported(t)) return t; }
+    return '';
+  }
+
+  async function startLiveRecording() {
+    if (!liveRoom || liveRecorder) return;
+    if (!window.MediaRecorder) { alert('المتصفح لا يدعم تسجيل الفيديو.'); return; }
+    const tracks = [];
+    liveRoom.localParticipant.videoTrackPublications.forEach(pub => {
+      if (pub.track && pub.track.mediaStreamTrack) tracks.push(pub.track.mediaStreamTrack);
+    });
+    liveRoom.localParticipant.audioTrackPublications.forEach(pub => {
+      if (pub.track && pub.track.mediaStreamTrack) tracks.push(pub.track.mediaStreamTrack);
+    });
+    if (!tracks.length) { alert('لا توجد مسارات فيديو/صوت للتسجيل.'); return; }
+    try {
+      const mime = pickRecorderMime();
+      liveRecChunks = [];
+      liveRecorder = new MediaRecorder(new MediaStream(tracks), mime ? { mimeType: mime } : undefined);
+      liveRecorder.ondataavailable = (e) => { if (e.data && e.data.size) liveRecChunks.push(e.data); };
+      liveRecorder.start(2000);
+      liveRecStartedAt = Date.now();
+      const btn = document.getElementById('recordLiveBtn');
+      const st = document.getElementById('recordLiveStatus');
+      btn.textContent = '⏹️ إيقاف التسجيل';
+      st.style.display = 'block';
+      liveRecTimer = setInterval(() => {
+        const sec = Math.floor((Date.now() - liveRecStartedAt) / 1000);
+        st.textContent = '🔴 جارٍ التسجيل ' + String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+      }, 500);
+      log('بدأ تسجيل البث (' + (liveRecorder.mimeType || 'افتراضي') + ')');
+    } catch (err) {
+      liveRecorder = null;
+      log('تعذر بدء التسجيل: ' + (err.message || err), true);
+      alert('تعذر بدء التسجيل: ' + (err.message || err));
+    }
+  }
+
+  // يوقف التسجيل ويعيد ملف الفيديو (أو null)
+  function stopLiveRecording() {
+    return new Promise((resolve) => {
+      clearInterval(liveRecTimer); liveRecTimer = null;
+      const btn = document.getElementById('recordLiveBtn');
+      const st = document.getElementById('recordLiveStatus');
+      if (btn) btn.textContent = '⏺️ تسجيل البث';
+      if (st) st.style.display = 'none';
+      const rec = liveRecorder;
+      if (!rec) { resolve(null); return; }
+      liveRecorder = null;
+      rec.onstop = () => {
+        const type = (rec.mimeType || 'video/webm').split(';')[0];
+        const blob = liveRecChunks.length ? new Blob(liveRecChunks, { type }) : null;
+        liveRecChunks = [];
+        if (!blob) { resolve(null); return; }
+        const ext = type.indexOf('mp4') !== -1 ? 'mp4' : 'webm';
+        resolve(new File([blob], 'sok-dajaj-live-' + new Date().toISOString().replace(/[:.]/g, '-') + '.' + ext, { type }));
+      };
+      try { rec.stop(); } catch (e) { resolve(null); }
+    });
+  }
+
+  // مشاركة ملف التسجيل (قائمة المشاركة) أو تنزيله كاحتياط
+  async function saveOrShareRecording(file) {
+    if (!file) return;
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'تسجيل البث - سوق الدجاج' });
+        log('تمت مشاركة تسجيل البث');
+        return;
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      log('تعذرت مشاركة الملف، سيتم تنزيله: ' + err.message, true);
+    }
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url; a.download = file.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    log('تم تنزيل تسجيل البث: ' + file.name);
+  }
+
+  async function shareLiveLink(title, streamId) {
+    const base = location.origin + location.pathname;
+    const url = streamId ? base + '?live=' + encodeURIComponent(streamId) : base;
+    const text = '🔴 بث مباشر: ' + (title || '') + '\nشاهده الآن على تطبيق سوق الدجاج الوطني';
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'بث مباشر - سوق الدجاج', text, url });
+        log('تمت مشاركة البث');
+      } else {
+        await navigator.clipboard.writeText(text + '\n' + url);
+        alert('تم نسخ رابط البث، يمكنك لصقه في أي تطبيق للمشاركة.');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') log('تعذرت مشاركة البث: ' + err.message, true);
+    }
+  }
+
+  document.getElementById('recordLiveBtn').addEventListener('click', async () => {
+    if (liveRecorder) {
+      const file = await stopLiveRecording();
+      if (file) await saveOrShareRecording(file);
+      else alert('لم يتم التقاط أي بيانات.');
+    } else {
+      await startLiveRecording();
+    }
+  });
+  document.getElementById('shareLiveBtn').addEventListener('click', () => {
+    shareLiveLink(document.getElementById('liveTitle').value.trim(), currentLiveStreamId);
+  });
+  document.getElementById('watchShareBtn').addEventListener('click', () => {
+    shareLiveLink(document.getElementById('watchTitle').textContent.trim(), currentWatchStreamId);
+  });
+
   async function endLiveStream() {
+    // إن كان التسجيل جاريًا نوقفه ونعرض حفظ/مشاركة الملف عند إنهاء البث
+    let pendingRecording = null;
+    if (liveRecorder) pendingRecording = await stopLiveRecording();
+    if (pendingRecording) saveOrShareRecording(pendingRecording);
     try {
       if (liveRoom) {
         await liveRoom.disconnect();
@@ -5058,7 +5244,9 @@ button.submit{padding:14px;}
     sendLiveComment('liveCommentInput', currentLiveStreamId);
   });
 
+  let currentWatchStreamId = null;
   async function watchLive(stream) {
+    currentWatchStreamId = stream.id;
     document.getElementById('watchTitle').textContent = stream.title;
     document.getElementById('watchViewerCountLabel').textContent = '👁️ ' + (stream.viewer_count || 0) + ' مشاهد';
     document.getElementById('watchCommentsList').innerHTML = '';
@@ -9043,11 +9231,40 @@ button.submit{padding:14px;}
     }
   });
 
+  // وسم حقل تسجيل الدخول بكلمة "خاطئ" بالأحمر
+  const WRONG_WORD = { ar:'خاطئ', fr:'Incorrect', en:'Wrong', es:'Incorrecto', de:'Falsch', tr:'Yanlış', it:'Errato', pt:'Incorreto', nl:'Onjuist', ru:'Неверно' };
+  function clearLoginWrong() {
+    ['loginEmail', 'loginPassword'].forEach(id => {
+      const inp = document.getElementById(id);
+      if (!inp) return;
+      inp.classList.remove('field-wrong-input');
+      const old = document.getElementById(id + 'Wrong');
+      if (old) old.remove();
+    });
+  }
+  function markLoginWrong(ids) {
+    clearLoginWrong();
+    ids.forEach(id => {
+      const inp = document.getElementById(id);
+      if (!inp) return;
+      inp.classList.add('field-wrong-input');
+      const span = document.createElement('span');
+      span.id = id + 'Wrong';
+      span.className = 'field-wrong-label';
+      span.textContent = '❌ ' + (WRONG_WORD[currentLang] || WRONG_WORD.ar);
+      inp.parentNode.appendChild(span);
+    });
+  }
+  ['loginEmail', 'loginPassword'].forEach(id => {
+    document.getElementById(id).addEventListener('input', clearLoginWrong);
+  });
+
   document.getElementById('loginBtn').addEventListener('click', async (e) => {
     log('تم الضغط على زر الدخول');
     const btn = document.getElementById('loginBtn');
     const msgEl = document.getElementById('loginMsg');
     msgEl.style.display = 'none';
+    clearLoginWrong();
 
     const identifier = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -9084,6 +9301,7 @@ button.submit{padding:14px;}
       if (!foundEmail) {
         log('لا يوجد حساب مرتبط برقم الهاتف: ' + normalizedPhone, true);
         showMsg(msgEl, "لا يوجد حساب مسجّل بهذا الرقم. تحقق من الرقم أو سجّل حسابًا جديدًا.", 'err');
+        markLoginWrong(['loginEmail']);
         btn.disabled = false;
         btn.textContent = "دخول";
         return;
@@ -9101,6 +9319,9 @@ button.submit{padding:14px;}
       if (error) {
         log('فشل الدخول: ' + error.message, true);
         showMsg(msgEl, translateAuthError(error.message), 'err');
+        if (/invalid login credentials|invalid_credentials/i.test(error.message || '')) {
+          markLoginWrong(['loginEmail', 'loginPassword']);
+        }
         return;
       }
 
