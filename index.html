@@ -9313,7 +9313,19 @@ button.submit{padding:14px;}
         log('فشل الدخول: ' + error.message, true);
         showMsg(msgEl, translateAuthError(error.message), 'err');
         if (/invalid login credentials|invalid_credentials/i.test(error.message || '')) {
-          markLoginWrong(['loginEmail', 'loginPassword']);
+          // نحدد مكان الخطأ فقط: هل البريد موجود؟ إن وُجد فكلمة المرور هي الخاطئة، وإلا فالبريد
+          let wrongIds = ['loginEmail', 'loginPassword'];
+          if (!isEmail) {
+            wrongIds = ['loginPassword']; // رقم الهاتف صحيح لأننا وجدنا بريده
+          } else {
+            try {
+              const { data: exists, error: exErr } = await supabase.rpc('login_email_exists', { p_email: emailToUse });
+              if (!exErr && typeof exists === 'boolean') {
+                wrongIds = exists ? ['loginPassword'] : ['loginEmail'];
+              }
+            } catch (e2) { /* نبقي على وسم الحقلين */ }
+          }
+          markLoginWrong(wrongIds);
         }
         return;
       }
