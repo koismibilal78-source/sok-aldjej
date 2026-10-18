@@ -5050,7 +5050,7 @@ button.submit{padding:14px;}
   let liveRecStartedAt = 0;
 
   function pickRecorderMime() {
-    const types = ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    const types = ['video/webm;codecs=vp8,opus', 'video/webm;codecs=vp9,opus', 'video/webm', 'video/mp4;codecs=avc1,mp4a.40.2', 'video/mp4'];
     if (!window.MediaRecorder) return '';
     for (const t of types) { if (MediaRecorder.isTypeSupported(t)) return t; }
     return '';
@@ -5060,34 +5060,62 @@ button.submit{padding:14px;}
     if (!liveRoom || liveRecorder) return;
     if (!window.MediaRecorder) { alert('المتصفح لا يدعم تسجيل الفيديو.'); return; }
     const tracks = [];
-    liveRoom.localParticipant.videoTrackPublications.forEach(pub => {
-      if (pub.track && pub.track.mediaStreamTrack) tracks.push(pub.track.mediaStreamTrack);
-    });
-    liveRoom.localParticipant.audioTrackPublications.forEach(pub => {
-      if (pub.track && pub.track.mediaStreamTrack) tracks.push(pub.track.mediaStreamTrack);
-    });
-    if (!tracks.length) { alert('لا توجد مسارات فيديو/صوت للتسجيل.'); return; }
     try {
-      const mime = pickRecorderMime();
-      liveRecChunks = [];
-      liveRecorder = new MediaRecorder(new MediaStream(tracks), mime ? { mimeType: mime } : undefined);
-      liveRecorder.ondataavailable = (e) => { if (e.data && e.data.size) liveRecChunks.push(e.data); };
-      liveRecorder.start(2000);
-      liveRecStartedAt = Date.now();
-      const btn = document.getElementById('recordLiveBtn');
-      const st = document.getElementById('recordLiveStatus');
-      btn.textContent = '⏹️ إيقاف التسجيل';
-      st.style.display = 'block';
-      liveRecTimer = setInterval(() => {
-        const sec = Math.floor((Date.now() - liveRecStartedAt) / 1000);
-        st.textContent = '🔴 جارٍ التسجيل ' + String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
-      }, 500);
-      log('بدأ تسجيل البث (' + (liveRecorder.mimeType || 'افتراضي') + ')');
-    } catch (err) {
-      liveRecorder = null;
-      log('تعذر بدء التسجيل: ' + (err.message || err), true);
-      alert('تعذر بدء التسجيل: ' + (err.message || err));
+      const lp = liveRoom.localParticipant;
+      const pubs = [];
+      if (lp.videoTrackPublications) lp.videoTrackPublications.forEach(x => pubs.push(x));
+      if (lp.audioTrackPublications) lp.audioTrackPublications.forEach(x => pubs.push(x));
+      pubs.forEach(pub => {
+        const mt = pub && pub.track && pub.track.mediaStreamTrack;
+        if (mt && mt.readyState === 'live') tracks.push(mt);
+      });
+    } catch (e) { log('تعذر جمع مسارات البث: ' + e.message, true); }
+
+    // احتياط: التقاط من عنصر المعاينة المحلي
+    if (!tracks.some(t => t.kind === 'video')) {
+      try {
+        const v = document.getElementById('localVideo');
+        const src = v && v.srcObject;
+        if (src) src.getTracks().forEach(t => { if (t.readyState === 'live') tracks.push(t); });
+      } catch (e) {}
     }
+    if (!tracks.length) { alert('لا توجد مسارات فيديو/صوت للتسجيل. تأكد أن البث يعمل ثم أعد المحاولة.'); log('التسجيل: لا توجد مسارات', true); return; }
+
+    const stream = new MediaStream(tracks);
+    const mime = pickRecorderMime();
+    let rec = null, lastErr = null;
+    const attempts = mime ? [{ mimeType: mime }, undefined] : [undefined];
+    for (const opts of attempts) {
+      try { rec = opts ? new MediaRecorder(stream, opts) : new MediaRecorder(stream); break; }
+      catch (e) { lastErr = e; }
+    }
+    if (!rec) {
+      log('تعذر إنشاء المسجّل: ' + (lastErr && lastErr.message), true);
+      alert('تعذر بدء التسجيل: ' + (lastErr && lastErr.message || 'غير مدعوم'));
+      return;
+    }
+    liveRecChunks = [];
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) liveRecChunks.push(e.data); };
+    rec.onerror = (e) => { log('خطأ في المسجّل: ' + ((e.error && e.error.message) || 'غير معروف'), true); };
+    try {
+      rec.start(1000);
+    } catch (e) {
+      log('تعذر بدء التسجيل: ' + e.message, true);
+      alert('تعذر بدء التسجيل: ' + e.message);
+      return;
+    }
+    liveRecorder = rec;
+    liveRecStartedAt = Date.now();
+    const btn = document.getElementById('recordLiveBtn');
+    const st = document.getElementById('recordLiveStatus');
+    btn.textContent = '⏹️ إيقاف التسجيل';
+    st.style.display = 'block';
+    st.textContent = '🔴 جارٍ التسجيل 00:00';
+    liveRecTimer = setInterval(() => {
+      const sec = Math.floor((Date.now() - liveRecStartedAt) / 1000);
+      st.textContent = '🔴 جارٍ التسجيل ' + String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+    }, 500);
+    log('بدأ تسجيل البث (' + (rec.mimeType || 'افتراضي') + ')');
   }
 
   // يوقف التسجيل ويعيد ملف الفيديو (أو null)
@@ -5134,6 +5162,44 @@ button.submit{padding:14px;}
     log('تم تنزيل تسجيل البث: ' + file.name);
   }
 
+  function showRecordingDialog(file) {
+    const old = document.getElementById('recDialog');
+    if (old) old.remove();
+    const mb = (file.size / 1048576).toFixed(1);
+    const wrap = document.createElement('div');
+    wrap.id = 'recDialog';
+    wrap.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+    wrap.innerHTML =
+      '<div style="background:#fff;border-radius:18px;padding:20px;max-width:340px;width:100%;text-align:center;direction:rtl;">' +
+      '<div style="font-size:18px;font-weight:700;margin-bottom:6px;">✅ تم حفظ تسجيل البث</div>' +
+      '<div style="font-size:13px;color:#6b6355;margin-bottom:14px;">الحجم: ' + mb + ' ميغابايت</div>' +
+      '<button type="button" id="recDlSave" class="submit" style="margin-bottom:8px;">📥 حفظ على الهاتف</button>' +
+      '<button type="button" id="recDlShare" class="submit" style="margin-bottom:8px;">📤 مشاركة</button>' +
+      '<button type="button" id="recDlClose" class="logout" style="width:100%;">إغلاق</button>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    document.getElementById('recDlSave').onclick = () => downloadRecording(file);
+    document.getElementById('recDlShare').onclick = async () => {
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'تسجيل البث - سوق الدجاج' });
+        } else {
+          alert('مشاركة الملفات غير مدعومة في هذا المتصفح، استخدم «حفظ على الهاتف» ثم شاركه من المعرض.');
+        }
+      } catch (err) { if (err.name !== 'AbortError') alert('تعذرت المشاركة: ' + err.message); }
+    };
+    document.getElementById('recDlClose').onclick = () => wrap.remove();
+  }
+
+  function downloadRecording(file) {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url; a.download = file.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
+    log('تم تنزيل تسجيل البث: ' + file.name);
+  }
+
   async function shareLiveLink(title, streamId) {
     const base = location.origin + location.pathname;
     const url = streamId ? base + '?live=' + encodeURIComponent(streamId) : base;
@@ -5154,8 +5220,8 @@ button.submit{padding:14px;}
   document.getElementById('recordLiveBtn').addEventListener('click', async () => {
     if (liveRecorder) {
       const file = await stopLiveRecording();
-      if (file) await saveOrShareRecording(file);
-      else alert('لم يتم التقاط أي بيانات.');
+      if (file) showRecordingDialog(file);
+      else alert('لم يتم التقاط أي بيانات. جرّب التسجيل لمدة أطول.');
     } else {
       await startLiveRecording();
     }
@@ -5171,7 +5237,7 @@ button.submit{padding:14px;}
     // إن كان التسجيل جاريًا نوقفه ونعرض حفظ/مشاركة الملف عند إنهاء البث
     let pendingRecording = null;
     if (liveRecorder) pendingRecording = await stopLiveRecording();
-    if (pendingRecording) saveOrShareRecording(pendingRecording);
+    if (pendingRecording) showRecordingDialog(pendingRecording);
     try {
       if (liveRoom) {
         await liveRoom.disconnect();
