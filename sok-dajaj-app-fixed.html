@@ -4175,22 +4175,15 @@ button.submit{padding:14px;}
       loadHomePosts();
       subscribeHomePostsRealtime();
     } else if (tab === 'publish') {
-      if (currentProfile && currentProfile.user_type !== 'breeder') {
-        document.getElementById('appGate').style.display = 'block';
-        document.getElementById('appGate').querySelector('p').textContent =
-        gateText('gate_breeder_only', 'نشر إعلانات البيع متاح فقط لحسابات مربي الدجاج. حسابك مسجل كتاجر.');
-      } else {
-        document.getElementById('appFormCard').style.display = 'block';
-        autoStartListLocation();
-      }
+      document.getElementById('appFormCard').style.display = 'block';
+      autoStartListLocation();
     } else if (tab === 'market') {
       document.getElementById('marketCard').style.display = 'block';
       setMarketCategory(categoryFilter || '');
       loadMarket('', '', currentMarketCategory);
     } else if (tab === 'live') {
       document.getElementById('liveCard').style.display = 'block';
-      const isBreederLive = currentProfile && currentProfile.user_type === 'breeder';
-      document.getElementById('startLiveBtn').style.display = isBreederLive ? 'block' : 'none';
+      document.getElementById('startLiveBtn').style.display = 'block';
       loadLiveStreams();
     } else if (tab === 'messages') {
       document.getElementById('messagesCard').style.display = 'block';
